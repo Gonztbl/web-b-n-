@@ -1,0 +1,116 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+
+{% block title_extend %}Shop - Home{% endblock %}
+{% load mathfilters %}
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <style>
+        .jumbotron-homepage {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'C:\Users\ASUS\Downloads\ShopManagement-master\ShopManagement-master\static\staticfiles\images\index_bg.png' %}"); /* Add a background image */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: .5rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+        }
+        .jumbotron-homepage h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+        }
+        .jumbotron-homepage .lead {
+            font-size: 1.5rem;
+        }
+        .featured-section {
+            padding: 3rem 0;
+        }
+        .featured-section h2 {
+            color: #e9ecef; /* Light color for dark background */
+            margin-bottom: 2rem;
+        }
+        .card-featured {
+            background-color: rgba(52, 58, 64, 0.8);
+            color: white;
+            border: none;
+            transition: transform .2s;
+        }
+        .card-featured:hover {
+            transform: scale(1.03);
+        }
+        .card-featured img {
+            height: 180px;
+            object-fit: cover;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="jumbotron jumbotron-homepage rounded-lg">
+            <h1 class="display-4">Welcome to Our Shop!</h1>
+            <p class="lead">Discover amazing products and enjoy your shopping experience.</p>
+            <hr class="my-4 border-light">
+            <p>Your one-stop destination for quality and value. Explore our collections today.</p>
+            <a class="btn btn-primary btn-lg mt-3" href="{% url 'products:product_list' %}" role="button">
+                Shop Now <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        {% comment %} Optional: Featured Products Section {% endcomment %}
+        {% comment %}
+        <section class="featured-section text-center">
+            <h2>Featured Products</h2>
+            <div class="row">
+                <!-- Example Featured Product Card (repeat for multiple) -->
+                <!-- You would need to pass featured products from your view to this template -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card card-featured h-100">
+                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product">
+                        <div class="card-body">
+                            <h5 class="card-title">Sample Product</h5>
+                            <p class="card-text">A short description of this featured item.</p>
+                            <a href="#" class="btn btn-outline-info">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card card-featured h-100">
+                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Another Item</h5>
+                            <p class="card-text">This item is also great and worth checking out.</p>
+                            <a href="#" class="btn btn-outline-info">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card card-featured h-100">
+                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Special Offer</h5>
+                            <p class="card-text">Don't miss out on this limited time offer!</p>
+                            <a href="#" class="btn btn-outline-info">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endcomment %}
+
+        {% if messages %}
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

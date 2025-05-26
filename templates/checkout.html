@@ -1,0 +1,111 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block title_extend %}Checkout{% endblock %}
+
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+    <style>
+        .checkout-form-container {
+            background-color: rgba(52, 58, 64, 0.9);
+            padding: 2rem;
+            border-radius: .5rem;
+            color: #f8f9fa;
+        }
+        .order-summary-checkout {
+            background-color: rgba(33, 37, 41, 0.95);
+            padding: 1.5rem;
+            border-radius: .5rem;
+            color: #f8f9fa;
+        }
+        .order-summary-checkout hr { border-top: 1px solid #444; }
+        .checkout-item img { max-height: 60px; object-fit: contain; border-radius: .25rem;}
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 pt-4">
+        <section id="header" class="mb-4">
+            <h1 class="text-light pl-lg-5 pl-3">Checkout <i class="fas fa-credit-card"></i></h1>
+            <hr class="my-4 border-light">
+        </section>
+
+        {% if messages %}
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-10 col-lg-8">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if not checkout_items %}
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center text-light">
+                    <h4>Your cart is empty or could not be validated for checkout.</h4>
+                    <p><a href="{% url 'products:cart_get' %}" class="btn btn-primary mt-2">Return to Cart</a></p>
+                </div>
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-lg-7 col-md-12 mb-4">
+                    <div class="checkout-form-container">
+                        <h3 class="mb-3">Shipping Information</h3>
+                        <form action="{% url 'products:cart_checkout' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="name_input">Full Name:</label>
+                                <input id="name_input" name="name" maxlength="100" class="form-control" type="text" value="{{ form_data.name|default:request.user.get_full_name|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone_input">Phone Number:</label>
+                                <input id="phone_input" name="phone" maxlength="20" class="form-control" type="tel" value="{{ form_data.phone|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="address_input">Full Address:</label>
+                                <textarea id="address_input" name="address" maxlength="255" class="form-control" rows="3" required>{{ form_data.address|default:'' }}</textarea>
+                            </div>
+                            <hr class="my-4 border-secondary">
+                            <p class="text-muted small">By clicking "Place Order", you agree to our terms and conditions.</p>
+                            <button type="submit" class="btn btn-success btn-lg btn-block">Place Order <i class="fas fa-check-circle"></i></button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-12">
+                    <div class="order-summary-checkout">
+                        <h4 class="mb-3">Your Order Summary</h4>
+                        {% for entry in checkout_items %}
+                            <div class="media mb-3 checkout-item align-items-center">
+                                {% if entry.product_obj.product_image %}
+                                    <img src="{{ entry.product_obj.product_image.url }}" class="mr-3" alt="{{ entry.product_obj.product_name }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-product.png' %}" class="mr-3" alt="Default product image">
+                                {% endif %}
+                                <div class="media-body">
+                                    <h6 class="my-0">{{ entry.product_obj.product_name }}</h6>
+                                    <small class="text-muted">Qty: {{ entry.quantity }} × ${{ entry.product_obj.sell_price|floatformat:2 }}</small>
+                                </div>
+                                <span class="text-muted font-weight-bold">${{ entry.quantity|mul:entry.product_obj.sell_price|floatformat:2 }}</span>
+                            </div>
+                        {% endfor %}
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <h5>Total:</h5>
+                            <h5 class="font-weight-bold text-info">${{ total|floatformat:2 }}</h5>
+                        </div>
+                        <p class="text-center mt-3">
+                            <a href="{% url 'products:cart_get' %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> Back to Cart</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

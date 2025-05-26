@@ -1,0 +1,23 @@
+body {
+    background: url("../images/products_bg.jpg") fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.container-fluid {
+    width: 90%;
+}
+
+.order-title {
+    /* background-color: rgba(0, 255, 0, 0.7) */
+    background-color: rgba(47, 130, 135, 0.7)
+}
+
+.order-item {
+    background-color: rgba(255, 255, 255, 0.7)
+}
+
+.order-price {
+    height: 100px;
+}

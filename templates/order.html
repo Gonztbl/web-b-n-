@@ -1,0 +1,146 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+{% load mathfilters %} {# Keep if needed, though not directly used here #}
+
+{% block title_extend %}Shop - My Orders{% endblock %}
+
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/order.css' %}">
+    <style>
+        .order-item-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            background-color: rgba(52, 58, 64, 0.85);
+            border: 1px solid #444;
+            transition: background-color .2s ease-in-out;
+        }
+        .order-item-link:hover {
+            background-color: rgba(62, 68, 74, 0.9);
+            color: #fff;
+        }
+        .order-title-row {
+            background-color: rgba(33, 37, 41, 0.9);
+            color: #f8f9fa;
+            font-weight: bold;
+        }
+        .status-pending { color: #ffc107; } /* Warning */
+        .status-confirmed { color: #28a745; } /* Success */
+        .status-processing { color: #17a2b8; } /* Info */
+        .status-shipped { color: #007bff; } /* Primary */
+        .status-delivered { color: #6f42c1; } /* Indigo-like */
+        .status-canceled { color: #dc3545; } /* Danger */
+
+        .filter-form-container {
+             background-color: rgba(33, 37, 41, 0.85);
+             padding: 1rem;
+             border-radius: .25rem;
+        }
+        .filter-form-container label { margin-right: .5rem;}
+        .filter-form-container .form-check-input { margin-right: .25rem; }
+        .filter-form-container .form-check-label { margin-right: .75rem; }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if request.path == '/products/orders/' and not request.GET %} {# Or your specific orders URL #}
+        <script>localStorage.removeItem("order_status_filter");</script>
+    {% endif %}
+
+    <div class="container-fluid mt-5 pt-3">
+        <section id="header" class="mb-4">
+            <h1 class="text-light pl-lg-5 pl-3">Your Orders <i class="fas fa-scroll"></i></h1>
+            <hr class="my-4 border-light">
+        </section>
+
+        {% if user.is_superuser %} {# Admin specific filter form #}
+        <section id="admin_orders_filter" class="mb-4">
+            <div class="row mx-lg-5 mx-2">
+                <div class="col-12 filter-form-container">
+                    <form id="admin-order-filter-form" class="form-inline" action="{% url 'products:orders_get' %}" method="GET">
+                        <div class="form-group text-light mr-3 mb-2">
+                            <label for="status_filter_select" class="font-weight-bold"><span class="text-dark-emphasis">Filter by Status: </span></label>
+                            <select name="status" id="status_filter_select" class="form-control form-control-sm">
+                                <option value="" {% if not request.GET.status %}selected{% endif %}>All Statuses</option>
+                                {% for status_val, status_display in user_order_status_choices %}
+                                    <option value="{{ status_val|lower }}" {% if request.GET.status == status_val|lower %}selected{% endif %}>{{ status_display }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn-warning btn-sm m-sm-2 mb-2" type="submit"><i class="fas fa-filter fa-fw"></i> Apply Filter</button>
+                        <a href="{% url 'products:orders_get' %}" class="btn btn-secondary btn-sm m-sm-2 mb-2"><i class="fas fa-times fa-fw"></i> Clear</a>
+                    </form>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <section id="orders_list_section">
+            <div class="row justify-content-center my-3">
+                <div class="col-12">
+                    {% if orders %}
+                        <div class="row order-title-row my-2 p-2 rounded-top d-none d-md-flex">
+                            <div class="col-md-1 text-center">ID</div>
+                            <div class="col-md-3 text-center">Customer (Phone)</div>
+                            <div class="col-md-4 text-center">Address</div>
+                            <div class="col-md-2 text-center">Total Price</div>
+                            <div class="col-md-2 text-center">Status</div>
+                        </div>
+
+                        {% for order in orders %}
+                            {% url 'products:order_details' oid=order.order_id as details_url %}
+                            <a href="{{ details_url }}" class="row order-item-link my-1 p-3 rounded align-items-center">
+                                <div class="col-md-1 col-6 mb-2 mb-md-0">
+                                    <strong class="d-md-none">Order ID: </strong>#{{order.order_id}}
+                                </div>
+                                <div class="col-md-3 col-12 mb-2 mb-md-0">
+                                    <strong class="d-md-none">Customer: </strong>{{order.customer_name}} 
+                                    <span class="small text-muted">({{order.phone_number}})</span>
+                                </div>
+                                <div class="col-md-4 col-12 mb-2 mb-md-0">
+                                    <strong class="d-md-none">Address: </strong>{{order.address}}
+                                </div>
+                                <div class="col-md-2 col-6 mb-2 mb-md-0 text-md-center">
+                                    <strong class="d-md-none">Total: </strong><span class="font-weight-bold">${{order.total_price|floatformat:2}}</span>
+                                </div>
+                                <div class="col-md-2 col-6 text-md-center">
+                                    <strong class="d-md-none">Status: </strong>
+                                    <span class="font-weight-bold status-{{ order.status|lower }}">{{order.get_status_display}}</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center p-5 bg-dark-transparent rounded">
+                            <h4 class="text-light">You don't have any orders yet.</h4>
+                            {% if not user.is_superuser %}
+                            <p class="text-muted">Why not start shopping?</p>
+                            <a href="{% url 'products:product_list' %}" class="btn btn-lg btn-info mt-3">
+                                <i class="fas fa-store"></i> Explore Products
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+             <!-- Pagination for orders if you implement it -->
+        </section>
+    </div>
+{% endblock %}
+
+{% block script_extend %}
+    <script>
+        // // Persistent filter status after submit (localStorage for admin filter)
+        // const adminOrderFilterForm = document.getElementById('admin-order-filter-form');
+        // if (adminOrderFilterForm) {
+        //     const statusSelect = document.getElementById('status_filter_select');
+        //     const savedStatus = localStorage.getItem('order_status_filter');
+        //     if (savedStatus) {
+        //         statusSelect.value = savedStatus;
+        //     }
+        //     adminOrderFilterForm.addEventListener('submit', function() {
+        //         localStorage.setItem('order_status_filter', statusSelect.value);
+        //     });
+        // }
+    </script>
+{% endblock %}

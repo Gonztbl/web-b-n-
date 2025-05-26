@@ -1,0 +1,34 @@
+body {
+    background: url("../images/products_bg.jpg") fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.container-fluid {
+    width: 90%;
+}
+
+/* .img-thumbnail { */
+/*     height: 100px; */
+/*     width: auto; */
+/* } */
+
+.pd-info {
+    display: block;
+    float: left;
+    width: 50%;
+}
+
+.pd-price {
+    float: right;
+    display: block;
+}
+
+.cart-item {
+    background-color: rgba(255, 255, 255, 0.7)
+}
+
+.cart-price {
+    height: 100px;
+}

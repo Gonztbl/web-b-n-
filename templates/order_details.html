@@ -1,0 +1,162 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block title_extend %}Order #{{ order.order_id }} Details{% endblock %}
+
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/orderdetails.css' %}">
+    <style>
+        .order-detail-item {
+            background-color: rgba(52, 58, 64, 0.9);
+            color: #f8f9fa;
+            border: 1px solid #444;
+        }
+        .order-detail-item img { max-height: 80px; object-fit: contain; }
+        .order-summary-panel {
+            background-color: rgba(33, 37, 41, 0.95);
+            color: #f8f9fa;
+            border: 1px solid #555;
+        }
+        .status-badge {
+            font-size: 1.2rem;
+            padding: .5em .75em;
+        }
+        .status-pending { background-color: #ffc107; color: #212529;}
+        .status-confirmed { background-color: #28a745; }
+        .status-processing { background-color: #17a2b8; }
+        .status-shipped { background-color: #007bff; }
+        .status-delivered { background-color: #6f42c1; }
+        .status-canceled { background-color: #dc3545; }
+
+        .admin-actions .btn { margin-bottom: 0.5rem; } /* Thêm khoảng cách cho các nút admin */
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-5 pt-3">
+        <section id="header" class="mb-4">
+            <h1 class="text-light pl-lg-5 pl-3">Order Details <i class="fas fa-receipt"></i></h1>
+            <hr class="my-4 border-light">
+        </section>
+
+        <section id="order_items_list">
+            <div class="row justify-content-center my-3">
+                <div class="col-lg-8 col-md-12 mb-3">
+                    <h4 class="text-light mb-3">Items in Order #{{ order.order_id }}</h4>
+                    {% if details %}
+                        {% for detail_item in details %}
+                            <div class="row order-detail-item my-2 p-3 rounded rounded-lg align-items-center">
+                                <div class="col-md-2 col-3 text-center">
+                                    {% if detail_item.product_id %}
+                                        <a href="{% url 'products:product_details' pid=detail_item.product_id.product_id %}">
+                                        {% if detail_item.product_id.product_image %}
+                                            <img src="{{detail_item.product_id.product_image.url}}" class="img-thumbnail img-responsive" alt="{{ detail_item.product_id.product_name }}">
+                                        {% else %}
+                                            <img src="{% static 'images/default-product.png' %}" class="img-thumbnail img-responsive" alt="Default product image">
+                                        {% endif %}
+                                        </a>
+                                    {% else %}
+                                        <img src="{% static 'images/default-product.png' %}" class="img-thumbnail img-responsive" alt="Product not available">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-10 col-9">
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <h5 class="font-weight-bold mb-1">
+                                                {% if detail_item.product_id %}
+                                                    <a href="{% url 'products:product_details' pid=detail_item.product_id.product_id %}" class="text-light">
+                                                        {{detail_item.product_id.product_name}}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-light">Product N/A (deleted)</span>
+                                                {% endif %}
+                                            </h5>
+                                            <p class="mb-1 small">ID: #{{detail_item.product_id.product_id|default:"N/A"}}</p>
+                                            <p class="mb-1">Price each:
+                                                <span class="text-info">
+                                                    {% if detail_item.product_id %}
+                                                        ${{detail_item.product_id.sell_price|floatformat:2}}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="col-md-5 text-md-right">
+                                            <p class="mb-1">Quantity: <span class="text-primary font-weight-bold">{{detail_item.quantity}}</span></p>
+                                            <p class="mb-0">Item Total:
+                                                <span class="text-info font-weight-bold">
+                                                    {% if detail_item.product_id %}
+                                                        ${{detail_item.quantity|mul:detail_item.product_id.sell_price|floatformat:2}}
+                                                    {% else %}
+                                                        (Price N/A)
+                                                    {% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-light">No items found in this order.</p>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="order-summary-panel p-3 rounded rounded-lg">
+                        <h4 class="card-title font-weight-bold">Order Summary</h4>
+                        <hr class="my-3 border-secondary">
+                        <p><strong>Order ID:</strong> #{{ order.order_id }}</p>
+                        <p><strong>User (Username):</strong> {{ order.user }}</p> {# Hiển thị username của người đặt hàng #}
+                        <p><strong>Customer Name (Shipping):</strong> {{ order.customer_name }}</p>
+                        <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+                        <p><strong>Address:</strong> {{ order.address }}</p>
+                        <p><strong>Date Placed:</strong> {{ order.created_at|date:"F d, Y, P" }}</p>
+                        <hr class="my-3 border-secondary">
+                        <div class="mb-3">
+                            <strong>Status:</strong>
+                            <span class="badge status-{{ order.status|lower }} status-badge">{{ order.get_status_display }}</span>
+                        </div>
+
+                        {% if user.is_superuser %}
+                            <div class="admin-actions mt-2">
+                                <p class="small text-muted mb-1">Admin Actions:</p>
+                                {% if order.status == "Pending" %}
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='confirm' %}" class="btn btn-success btn-sm d-block">Confirm Order</a>
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
+                                {% elif order.status == "Confirmed" %}
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='process' %}" class="btn btn-info btn-sm d-block">Mark as Processing</a>
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
+                                {% elif order.status == "Processing" %}
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='ship' %}" class="btn btn-primary btn-sm d-block">Mark as Shipped</a>
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
+                                {% elif order.status == "Shipped" %}
+                                    <a href="{% url 'order_status_change' oid=order.order_id action='deliver' %}" class="btn btn-secondary btn-sm d-block">Mark as Delivered</a>
+                                {% elif order.status == "Delivered" %}
+                                    <p class="text-success font-weight-bold"><i class="fas fa-check-circle"></i> Order Delivered</p>
+                                {% elif order.status == "Canceled" %}
+                                     <p class="text-danger font-weight-bold"><i class="fas fa-times-circle"></i> Order Canceled</p>
+                                {% endif %}
+                            </div>
+                        {% elif user.is_authenticated and not user.is_superuser and order.user == user.username %}
+                            {# Nút hủy cho người dùng thường #}
+                            {% if order.status == "Pending" %}
+                                <a href="{% url 'products:order_cancel' oid=order.order_id %}" class="btn btn-danger btn-block mt-3" onclick="return confirm('Are you sure you want to cancel this order (#{{order.order_id}})?');">
+                                    Cancel My Order <i class="fas fa-times-circle"></i>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
+                        <hr class="my-3 border-secondary">
+                        <div class="d-flex justify-content-between">
+                            <h5>Total Price:</h5>
+                            <h5 class="font-weight-bold text-info">${{ order.total_price|floatformat:2 }}</h5>
+                        </div>
+                        <a href="{% url 'products:orders_get' %}" class="btn btn-outline-secondary btn-block mt-3"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

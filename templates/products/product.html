@@ -1,0 +1,215 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+
+{% block title_extend %}Shop - Products{% endblock %}
+{% load mathfilters %}
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/product.css' %}">
+    <style>
+        .bg-dark-transparent {
+            background-color: rgba(33, 37, 41, 0.85); /* Dark with transparency */
+        }
+        .product-card {
+            transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .product-image-fixed {
+            height: 200px; /* Or your desired fixed height */
+            object-fit: cover; /* Scales the image to cover the area, cropping if necessary */
+        }
+        .product-name-truncate {
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Limit to 2 lines */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 2.8em; /* Adjust based on font size and line height for 2 lines */
+            margin-bottom: 0.5rem;
+        }
+        .form-check-input { margin-right: .25rem; } /* Spacing for radio buttons */
+        .form-check-label { margin-right: .75rem; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-5 pt-3">
+        <section id="header" class="mb-4">
+            <h1 class="text-light pl-lg-5 pl-3">Products <i class="fas fa-store-alt"></i></h1>
+            <hr class="my-4 border-light">
+        </section>
+
+        <section id="products_filter" class="mb-4">
+            <div class="row mx-lg-5 mx-2 my-2 p-3 rounded rounded-lg bg-dark-transparent">
+                <form id="advanced-filter-form" class="form w-100" action="{% url 'products:product_list' %}" method="GET">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-12 mb-3">
+                            <div class="form-group bg-success text-light p-2 rounded rounded-lg h-100">
+                                <label for="pname_input" class="font-weight-bold mx-sm-2 d-block"><span class="text-dark">Search: </span></label>
+                                <input id="pname_input" class="form-control mr-sm-2" name="pname" type="search" placeholder="Product name" aria-label="Search" value="{{ request.GET.pname }}">
+                            </div>
+                        </div>
+            
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div id="filter_availability_group" class="form-group bg-success text-light p-2 rounded rounded-lg h-100">
+                                <label class="font-weight-bold mx-sm-2 d-block"><span class="text-dark">Filter: </span></label>
+                                <div class="form-check form-check-inline">
+                                    <input id="filter_none" class="form-check-input" type="radio" name="filter" value="" {% if not request.GET.filter or request.GET.filter == "" %}checked{% endif %}>
+                                    <label for="filter_none" class="form-check-label">None</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input id="filter_avail" class="form-check-input" type="radio" name="filter" value="avail" {% if request.GET.filter == 'avail' %}checked{% endif %}>
+                                    <label for="filter_avail" class="form-check-label">Available</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input id="filter_sold_out" class="form-check-input" type="radio" name="filter" value="sold-out" {% if request.GET.filter == 'sold-out' %}checked{% endif %}>
+                                    <label for="filter_sold_out" class="form-check-label">Sold out</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div id="sort_group" class="form-group bg-success text-light p-2 rounded rounded-lg h-100">
+                                <label class="font-weight-bold mx-sm-2 d-block"><span class="text-dark">Sort by: </span></label>
+                                <div class="form-check form-check-inline">
+                                    <input id="sort_none_p" class="form-check-input" type="radio" name="sort" value="" {% if not request.GET.sort or request.GET.sort == "" %}checked{% endif %}> 
+                                    <label for="sort_none_p" class="form-check-label">Default</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input id="sort_name_asc" class="form-check-input" type="radio" name="sort" value="name-a-to-z" {% if request.GET.sort == 'name-a-to-z' %}checked{% endif %}>
+                                    <label for="sort_name_asc" class="form-check-label">A-Z</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input id="sort_name_desc" class="form-check-input" type="radio" name="sort" value="name-z-to-a" {% if request.GET.sort == 'name-z-to-a' %}checked{% endif %}>
+                                    <label for="sort_name_desc" class="form-check-label">Z-A</label>
+                                </div>
+                                <br>
+                                <div class="form-check form-check-inline">
+                                    <input id="sort_price_asc" class="form-check-input" type="radio" name="sort" value="price-up" {% if request.GET.sort == 'price-up' %}checked{% endif %}>
+                                    <label for="sort_price_asc" class="form-check-label">Price Up</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input id="sort_price_desc" class="form-check-input" type="radio" name="sort" value="price-down" {% if request.GET.sort == 'price-down' %}checked{% endif %}>
+                                    <label for="sort_price_desc" class="form-check-label">Price Down</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12 text-center">
+                            <button class="btn btn-warning m-sm-2" type="submit"><i class="fas fa-filter fa-fw"></i> Apply Filters</button>
+                            <a href="{% url 'products:product_list' %}" class="btn btn-secondary m-sm-2"><i class="fas fa-times-circle fa-fw"></i> Clear All</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="products_list_section">
+            {% if count %}
+                <div class="row ml-lg-5 ml-2 mb-3">
+                    <h5 class="text-light p-2 bg-info rounded rounded-lg">
+                        <i class="fas fa-info-circle"></i> 
+                        Showing {{ products.start_index }}-{{ products.end_index }} of {{ products.paginator.count }} product(s).
+                    </h5>
+                </div>
+            {% else %}
+                <div class="row justify-content-center my-5">
+                    <div class="col-md-8 text-center">
+                        <h3 class="text-light">No products match your criteria... It's surprisingly empty...</h3>
+                        <img src="https://i.imgur.com/l8lNhIC.jpg" class="img-thumbnail my-3" alt="Empty" style="max-width: 300px; border-radius: .5rem;">
+                        <p><a href="{% url 'products:product_list' %}" class="btn btn-primary">View All Products</a></p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="row justify-content-center">
+                {% for product_item in products %}
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 my-3 d-flex align-items-stretch">
+                    <div class="card product-card h-100 w-100 bg-dark text-light">
+                    <a href="{% url 'products:product_details' pid=product_item.product_id %}" class="text-decoration-none">
+                        {% if product_item.product_image %}
+                            <img src="{{product_item.product_image.url}}" class="card-img-top product-image-fixed" alt="{{product_item.product_name}}">
+                        {% else %}
+                            <img src="{% static 'images/default-product.png' %}" class="card-img-top product-image-fixed" alt="Default product image">
+                        {% endif %}
+                    </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title font-weight-bold product-name-truncate">
+                                <a href="{% url 'products:product_details' pid=product_item.product_id %}" class="text-light">{{product_item.product_name}}</a>
+                            </h5>
+                            <p class="card-text">Price: <span class="text-info font-weight-bold">${{product_item.sell_price|floatformat:2}}</span></p>
+                            {% if product_item.quantity_in_stock <= 0 %}
+                                <p class="card-text text-danger font-weight-bold"><i class="fas fa-times-circle"></i> Sold Out</p>
+                            {% else %}
+                                <p class="card-text text-success"><i class="fas fa-check-circle"></i> {{product_item.quantity_in_stock}} in stock</p>
+                            {% endif %}
+                            <div class="mt-auto"> {# Pushes buttons to the bottom #}
+                                <a href="{% url 'products:product_details' pid=product_item.product_id %}" class="btn btn-primary btn-sm mr-1">View <i class="fas fa-info-circle"></i></a>
+                            {% if user.is_superuser %}
+                                <a href="{% url 'products:product_edit' pid=product_item.product_id %}" class="btn btn-warning btn-sm">Manage <i class="fas fa-tasks fa-fw"></i></a>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <div class="pagination justify-content-center mt-4">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-light border-secondary" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">« First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-light border-secondary" href="?page={{ products.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link bg-secondary text-muted border-dark">« First</span></li>
+                        <li class="page-item disabled"><span class="page-link bg-secondary text-muted border-dark">Previous</span></li>
+                    {% endif %}
+                    
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link bg-primary border-primary">
+                            Page {{ products.number }} of {{ products.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-light border-secondary" href="?page={{ products.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link bg-dark text-light border-secondary" href="?page={{ products.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Last »</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link bg-secondary text-muted border-dark">Next</span></li>
+                        <li class="page-item disabled"><span class="page-link bg-secondary text-muted border-dark">Last »</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+            <!-- End Pagination -->
+        </section>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %} 
+                <script>
+                    alert("{{ message|escapejs }}"); 
+                </script> 
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block script_extend %}
+    {# Scripts from previous version can be kept if needed, but ensure they don't conflict #}
+{% endblock %}

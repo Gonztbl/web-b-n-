@@ -1,0 +1,127 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+{% load mathfilters %}
+
+
+{% block title_extend %}Shop - Cart{% endblock %}
+
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <style>
+        .cart-item {
+            background-color: rgba(52, 58, 64, 0.9); /* Darker, more opaque */
+            color: #f8f9fa; /* Light text */
+            border: 1px solid #444;
+        }
+        .cart-item img { max-height: 100px; object-fit: contain; }
+        .cart-summary-card {
+            background-color: rgba(33, 37, 41, 0.95); /* Very dark */
+            color: #f8f9fa;
+            border: 1px solid #555;
+        }
+        .product-info, .product-price { /* For corrected classes */
+            padding-left: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-5 pt-3">
+        <section id="header" class="mb-4">
+            <h1 class="text-light pl-lg-5 pl-3">Your Shopping Cart <i class="fas fa-shopping-cart"></i></h1>
+            <hr class="my-4 border-light">
+        </section>
+
+        {% if messages %}
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-10 col-lg-8">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <section id="cart_content">
+            <div class="row justify-content-center my-3">
+                <div class="col-lg-8 col-md-12 mb-3">
+                    {% if cart_entries %}
+                        {% for entry in cart_entries %}
+                            <div class="row cart-item my-2 p-3 rounded rounded-lg align-items-center">
+                                <div class="col-md-2 col-4 text-center">
+                                    <a href="{% url 'products:product_details' pid=entry.product_obj.product_id %}">
+                                    {% if entry.product_obj.product_image %}
+                                        <img src="{{entry.product_obj.product_image.url}}" class="img-thumbnail img-responsive" alt="{{ entry.product_obj.product_name }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-product.png' %}" class="img-thumbnail img-responsive" alt="Default product image">
+                                    {% endif %}
+                                    </a>
+                                </div>
+                                <div class="col-md-10 col-8">
+                                    <div class="row">
+                                        <div class="col-md-7 product-info">
+                                            <h5 class="font-weight-bold mb-1">
+                                                <a href="{% url 'products:product_details' pid=entry.product_obj.product_id %}" class="text-light">{{entry.product_obj.product_name}}</a>
+                                            </h5>
+                                            <p class="mb-1 small">ID: #{{entry.product_obj.product_id}}</p>
+                                            <p class="mb-1">Price each: <span class="text-info">${{entry.product_obj.sell_price|floatformat:2}}</span></p>
+                                            <a href="{% url 'products:product_details' pid=entry.product_obj.product_id %}" class="btn btn-primary btn-sm py-1 px-2 mr-1">Details <i class="fas fa-info-circle fa-xs"></i></a>
+                                            <a href="{% url 'products:cart_delete' pid=entry.product_obj.product_id %}" class="btn btn-danger btn-sm py-1 px-2">Delete <i class="fas fa-trash-alt fa-xs"></i></a>
+                                        </div>
+                                        <div class="col-md-5 product-price text-md-right">
+                                            <p class="mb-1">Quantity: <span class="text-primary font-weight-bold">{{entry.quantity}}</span></p>
+                                            <p class="mb-0">Item Total: <span class="text-info font-weight-bold">${{entry.quantity|mul:entry.product_obj.sell_price|floatformat:2}}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                         <div class="text-center p-5 bg-dark-transparent rounded">
+                            <h4 class="text-light">Your cart is currently empty.</h4>
+                            <p class="text-muted">Looks like you haven't added any products yet.</p>
+                            <a href="{% url 'products:product_list' %}" class="btn btn-lg btn-info mt-3">
+                                <i class="fas fa-store"></i> Start Shopping
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="cart-summary-card p-3 rounded rounded-lg">
+                        <h4 class="card-title font-weight-bold">Order Summary</h4>
+                        <hr class="my-3 border-secondary">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span class="font-weight-bold">${{total|floatformat:2}}</span>
+                        </div>
+                        {% if changed %}
+                        <div class="alert alert-warning small p-2">
+                            <i class="fas fa-exclamation-triangle"></i> Your cart was updated due to stock changes.
+                        </div>
+                        {% endif %}
+                        {% if total > 0 %}
+                            <a href="{% url 'products:cart_checkout' %}" class="btn btn-success btn-block btn-lg mt-3">
+                                Proceed to Checkout <i class="fas fa-cash-register"></i>
+                            </a>
+                            {% if changed %}
+                                <a href="{% url 'products:cart_get' %}" class="btn btn-outline-warning btn-block btn-sm mt-2">
+                                    Refresh Cart Status <i class="fas fa-redo"></i>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-success btn-block btn-lg mt-3 disabled" aria-disabled="true">
+                                Checkout <i class="fas fa-cash-register"></i>
+                            </button>
+                            <p class="small text-muted text-center mt-2">Add items to your cart to proceed.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

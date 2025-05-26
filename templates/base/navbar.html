@@ -1,0 +1,82 @@
+{% extends 'base/template.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block head %}
+    {% block head_extend %}{% endblock %}
+{% endblock %}
+
+{% block title %}
+    {% block title_extend %}Untitled Page{% endblock %}
+{% endblock %}
+
+{% block body %}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Shop</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <li class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, <span class="text-info">Admin</span>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item text-warning" href="/products"><i class="fas fa-tasks fa-fw"></i> Products</a>
+                                <a class="dropdown-item text-warning" href="/products/orders"><i class="fas fa-tasks fa-fw"></i> Orders</a>
+                                <a class="dropdown-item text-danger" href="/accounts/logout?next=/"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
+                            </div>
+                        </li>
+                        <a href="/admin/products/add" class="btn btn-warning"><i class="fas fa-plus"></i> Add Product</a>
+                    {% else %}
+                    <li class="text-primary nav-item">
+                        <a class="nav-link" href="/products">Products</a>
+                    </li>
+               
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Hello, <span class="text-info">{{user.username}}</span>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item text-danger" href="/accounts/logout?next=/"><i class="fas fa-sign-out-alt fa-fw"></i> Logout</a>
+                            <a class="dropdown-item" href="/products/cart"><i class="fas fa-shopping-cart fa-fw"></i> View cart</a>
+                            <a class="dropdown-item" href="/products/orders"><i class="fas fa-scroll fa-fw"></i> View orders</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                {% else %}
+                <li class="text-primary nav-item">
+                    <a class="nav-link" href="/products">Products</a>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Account
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item text-primary" href="/accounts/register?next={{request.path}}"><i class="fas fa-user-plus fa-fw"></i> Register</a>
+                        <a class="dropdown-item text-info" href="/accounts/login?next={{request.path}}"><i class="fas fa-sign-in-alt fa-fw"></i> Login</a>
+                    </div>
+                </li>
+                {% endif %}
+                </ul>
+                <form id="search" class="form-inline my-2 my-lg-0" action="/products/search">
+                    <input id="name" class="form-control mr-sm-2" name="pname" type="search" placeholder="Search" aria-label="Search" required>
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-search fa-fw"></i> Search</button></a>
+                </form>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+{% endblock %}
+
+{% block script %}
+    {% block script_extend %}{% endblock %}
+{% endblock %}

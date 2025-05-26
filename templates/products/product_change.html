@@ -1,0 +1,65 @@
+{% extends 'base/navbar.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block title_extend %}{{product.product_name}}{% endblock %}
+
+{% block head_extend %}
+        <link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-6 p-5 bg-light">
+                <!-- <form action="/admin/products/accept_change/{{product.product_id}}" method="post"> -->
+                <form action="{{url}}" method="post">
+
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="product_id">Product id</label>
+                        <input type="text" class="form-control" id="product_id" name="product_id" value="{{product.product_id}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="product_name">Product name</label>
+                        <input type="text" class="form-control" id="product_name" name="product_name" value="{{product.product_name}}" maxlength="25">
+                    </div>
+<div class="form-group">
+    <label for="product_image">Product image</label>
+    <input type="file" class="form-control" id="product_image" name="product_image">
+    {% if product.product_image %}
+        <small class="text-muted">Current image: <a href="{{ product.product_image.url }}">{{ product.product_image.url }}</a></small>
+    {% endif %}
+</div>
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" value="{{product.company}}" maxlength="25">
+                    </div>
+                    <div class="form-group">
+                        <label for="product_description">Product description</label>
+                        <input type="text" class="form-control" id="product_description" name="product_description" value="{{product.product_description}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity in stock</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity" value="{{product.quantity_in_stock}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Sell price</label>
+                        <input type="text" class="form-control" id="price" name="price" value="{{product.sell_price}}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit <i class="fas fa-check"></i></button>
+                    <a href="/admin/products/delete/{{product.product_id}}" class="btn btn-danger">Delete <i class="fas fa-trash-alt"></i></a>
+                </form>
+            </div>
+        </div>
+        {% if messages %}
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-6 p-3 border rounded-lg bg-danger">
+                {% for message in messages %}
+                    <p class="text-light"><i class="fas fa-info-circle"></i> {{message}}</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+body {
+    background: url("../images/index_bg.png") fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.jumbotron {
+    /* background: none; */
+    background-color: rgba(0, 0, 0, 0.5)
+}
+
+.jumbotron hr {
+    border-top: 2px solid white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
