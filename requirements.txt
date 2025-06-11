@@ -1,26 +1,16 @@
-# requirements.txt
-
-# Core Django framework
-Django~=4.2
-
-# WSGI HTTP Server for production
-gunicorn
-
-# Database adapter for PostgreSQL
-psycopg2-binary
-
-# For handling environment variables from .env files
-python-dotenv
-python-decouple
-
-# PayOS Python SDK for payment gateway integration
+Django==5.2.2
+psycopg2-binary==2.9.10
+django-allauth==65.8.0
+django-crispy-forms==2.4
+django-bootstrap4==25.1
+django-countries==7.6.1
+django-mathfilters==1.0.0
+python-dotenv==0.16.0
+python-decouple==3.8
+whitenoise==6.6.0
+gunicorn==22.0.0
+stripe==12.1.0
+python-dotenv>=1.0.0
+requests>=2.25.1
 payos
-
-# For making HTTP requests (used for Gemini API)
-requests
-
-# Django template filter for performing math operations
-django-mathfilters
-
-# Python Imaging Library fork, required for ImageField
 Pillow

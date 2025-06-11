@@ -40,6 +40,7 @@ SECRET_KEY = '&5c1wcgzgoighiw1js%$n8otv!_e&1gm*j(dfxzgcp65fttxv2'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'web-b-n-8trv.onrender.com',
     'localhost',
     '127.0.0.1',
 
