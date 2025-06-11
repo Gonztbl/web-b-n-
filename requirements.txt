@@ -3,6 +3,9 @@
 # Core Django framework
 Django~=4.2
 
+# WSGI HTTP Server for production
+gunicorn
+
 # Database adapter for PostgreSQL
 psycopg2-binary
 
