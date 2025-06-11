@@ -1,55 +1,42 @@
+# shop/settings.py
+
 import os
-from dotenv import load_dotenv # Import thư viện
-
-# Xác định BASE_DIR (thư mục gốc của dự án)
-# Cách này thường dùng nếu settings.py nằm trong một thư mục con (ví dụ: 'shop')
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Hoặc nếu settings.py nằm ngay thư mục gốc, thì:
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Hãy đảm bảo BASE_DIR trỏ đúng đến thư mục chứa file .env của bạn.
-# Cách phổ biến cho cấu trúc dự án Django hiện đại:
-# (Giả sử settings.py nằm trong shop/shop/settings.py và .env nằm ở shop/)
+import dj_database_url
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent # Trỏ lên 2 cấp để ra thư mục gốc dự án
 
-# Tải các biến từ file .env vào biến môi trường của OS
-# load_dotenv() sẽ tự động tìm file .env ở thư mục hiện tại hoặc các thư mục cha
-# Hoặc bạn có thể chỉ định đường dẫn rõ ràng:
+# --- CẤU TRÚC THƯ MỤC ---
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# --- QUAN TRỌNG: CẤU HÌNH BIẾN MÔI TRƯỜNG ---
+# Trên Render, bạn sẽ KHÔNG dùng file .env. Thay vào đó, bạn sẽ thêm các biến này
+# vào tab "Environment" trong dashboard của dịch vụ.
+# Đoạn code dưới đây chỉ để tiện phát triển ở máy local.
+from dotenv import load_dotenv
 dotenv_path = os.path.join(BASE_DIR, '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
-else:
-    print(f"CẢNH BÁO: File .env không tìm thấy tại {dotenv_path}. Các biến môi trường có thể không được tải đúng cách.")
 
+# --- CÁC THIẾT LẬP BẢO MẬT VÀ PRODUCTION ---
 
-# Đọc các khóa PayOS từ biến môi trường (đã được load_dotenv nạp vào)
-PAYOS_CLIENT_ID = os.environ.get('PAYOS_CLIENT_ID')
-PAYOS_API_KEY = os.environ.get('PAYOS_API_KEY')
-PAYOS_CHECKSUM_KEY = os.environ.get('PAYOS_CHECKSUM_KEY')
+# Lấy SECRET_KEY từ biến môi trường. KHÔNG BAO GIỜ hardcode nó.
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# Kiểm tra xem các key có được tải không (quan trọng cho debug)
-if not PAYOS_CLIENT_ID:
-    print("CẢNH BÁO: PAYOS_CLIENT_ID không được tìm thấy trong biến môi trường.")
-if not PAYOS_API_KEY:
-    print("CẢNH BÁO: PAYOS_API_KEY không được tìm thấy trong biến môi trường.")
-if not PAYOS_CHECKSUM_KEY:
-    print("CẢNH BÁO: PAYOS_CHECKSUM_KEY không được tìm thấy trong biến môi trường.")
-SECRET_KEY = '&5c1wcgzgoighiw1js%$n8otv!_e&1gm*j(dfxzgcp65fttxv2'
+# DEBUG = False trên production. 
+# Chúng ta sẽ đọc giá trị từ biến môi trường. Mặc định là False.
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+# Cấu hình ALLOWED_HOSTS cho cả local và Render
 ALLOWED_HOSTS = [
-    'web-b-n-8trv.onrender.com',
     'localhost',
     '127.0.0.1',
-
-    # Hoặc nếu bạn muốn cho phép tất cả các subdomain của ngrok-free.app (nếu sau này URL thay đổi):
-    # '.ngrok-free.app',
 ]
 
+# Tự động thêm domain của Render vào ALLOWED_HOSTS nếu nó tồn tại
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
-# Application definition
+# --- APPLICATION DEFINITION ---
 
 INSTALLED_APPS = [
     'mainpage.apps.MainpageConfig',
@@ -58,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # Thêm WhiteNoise vào đây
+    'whitenoise.runserver_nostatic', 
     'django.contrib.staticfiles',
     'mathfilters',
     'products',
@@ -66,6 +55,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Thêm WhiteNoise Middleware ngay sau SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,7 +78,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',  # Thêm media context processor
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -95,73 +86,52 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'shop.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
+# --- DATABASE ---
+# Cấu hình database để đọc từ biến môi trường DATABASE_URL mà Render cung cấp.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shopdb',
-        'USER': 'postgres',
-        'PASSWORD': '28072004',
-        'HOST': 'localhost',  # Hoặc địa chỉ máy chủ PostgreSQL
-        'PORT': '5432',  # Cổng mặc định PostgreSQL
-    }
+    'default': dj_database_url.config(
+        # Fallback về database local nếu không tìm thấy DATABASE_URL
+        default=f'postgresql://postgres:28072004@localhost:5432/shopdb',
+        conn_max_age=600
+    )
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
-
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
-
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
+USE_TZ = True # Nên đặt là True cho production
 
-USE_TZ = False
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
-
+# --- STATIC FILES (CSS, JavaScript, Images) ---
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static/staticfiles"),
-    os.path.join(BASE_DIR,"accounts/static")
-]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-from decouple import config
+
+# --- CÁC BIẾN CỦA BẠN (PayOS, Email) ---
+# Đọc từ biến môi trường
+PAYOS_CLIENT_ID = os.environ.get('PAYOS_CLIENT_ID')
+PAYOS_API_KEY = os.environ.get('PAYOS_API_KEY')
+PAYOS_CHECKSUM_KEY = os.environ.get('PAYOS_CHECKSUM_KEY')
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # hoặc SMTP server của bạn
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'doanduychien204@gmail.com'
-EMAIL_HOST_PASSWORD = 'hwor lyat ygbw xmld' # Nhập app password của email
-DEFAULT_FROM_EMAIL = 'doanduychien204@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
