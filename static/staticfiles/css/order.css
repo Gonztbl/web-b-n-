@@ -1,35 +1,29 @@
-body {
-    background: url("../images/products_bg.jpg") fixed;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
+/* Orders listing page specific styles */
+.order-title-row {
+  background: linear-gradient(45deg, rgba(33, 37, 41, 0.9), rgba(52, 58, 64, 0.9));
+  border: 2px solid rgba(23, 162, 184, 0.3);
 }
 
-.container-fluid {
-    width: 90%;
+.order-item-link {
+  border-left: 4px solid transparent;
+  transition: all 0.4s ease;
 }
 
-.order-title {
-    /* background-color: rgba(0, 255, 0, 0.7) */
-    background-color: rgba(47, 130, 135, 0.7)
+.order-item-link:hover {
+  border-left-color: #17a2b8;
+  background: rgba(62, 68, 74, 0.95);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
-a {
-    color: black;
+.filter-form-container {
+  border: 2px solid rgba(255, 193, 7, 0.3);
 }
 
-a:hover {
-    text-decoration: none;
+.filter-form-container .form-control {
+  background: rgba(73, 80, 87, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-a.order-item {
-    background-color: rgba(169, 169, 169, 0.9)
-}
-
-a:hover.order-item {
-    background-color: rgba(255, 255, 255, 1.0)
-}
-
-a.order-price {
-    height: 100px;
+.filter-form-container .btn-warning {
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
 }

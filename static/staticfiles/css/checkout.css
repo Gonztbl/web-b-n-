@@ -1,10 +1,32 @@
-body {
-    background: url("../images/products_bg.jpg") fixed;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
+/* Checkout page specific styles */
+.checkout-form-container {
+  background: rgba(52, 58, 64, 0.95);
+  border: 2px solid rgba(23, 162, 184, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
-.customer {
-    background-color: rgba(255, 255, 255, 0.7);
+.order-summary-checkout {
+  background: rgba(33, 37, 41, 0.98);
+  border: 2px solid rgba(32, 201, 151, 0.3);
+  position: sticky;
+  top: 20px;
+}
+
+.checkout-item {
+  border-left: 4px solid #17a2b8;
+  transition: all 0.3s ease;
+}
+
+.checkout-item:hover {
+  border-left-color: #20c997;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.checkout-item img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.checkout-item:hover img {
+  transform: scale(1.1);
 }

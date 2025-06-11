@@ -1,23 +1,49 @@
-body {
-    background: url("../images/products_bg.jpg") fixed;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
+/* Order details page specific styles */
+.order-detail-item {
+  background: rgba(52, 58, 64, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #007bff;
+  transition: all 0.4s ease;
 }
 
-.container-fluid {
-    width: 90%;
+.order-detail-item:hover {
+  border-left-color: #17a2b8;
+  background: rgba(62, 68, 74, 0.98);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.order-title {
-    /* background-color: rgba(0, 255, 0, 0.7) */
-    background-color: rgba(47, 130, 135, 0.7)
+.order-summary-panel {
+  background: rgba(33, 37, 41, 0.98);
+  border: 2px solid rgba(111, 66, 193, 0.3);
+  position: sticky;
+  top: 20px;
 }
 
-.order-item {
-    background-color: rgba(255, 255, 255, 0.7)
+.admin-actions .btn {
+  margin-bottom: 0.75rem;
+  width: 100%;
+  transition: all 0.3s ease;
 }
 
-.order-price {
-    height: 100px;
+.admin-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.table-dark {
+  background: rgba(33, 37, 41, 0.95);
+  backdrop-filter: blur(15px);
+}
+
+.table-dark th {
+  background: linear-gradient(45deg, #17a2b8, #138496);
+  border: none;
+}
+
+.table-dark td {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

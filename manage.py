@@ -1,10 +1,18 @@
+
+
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
 
-
 def main():
+    try:
+        import dotenv
+    except ImportError:
+        pass # dotenv không bắt buộc, nhưng tốt nếu có cho development
+    else:
+        dotenv.load_dotenv() # Tải các biến từ file .env (nếu tồn tại)
+    # ---- KẾT THÚC ĐOẠN THÊM ----
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'shop.settings')
     try:
         from django.core.management import execute_from_command_line

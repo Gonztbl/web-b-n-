@@ -25,6 +25,16 @@ urlpatterns = [
     path('orders/', views.orders_get, name='orders_get'),
     path('orders/details/<int:oid>/', views.order_details, name='order_details'),
     path('orders/cancel/<int:oid>/', views.order_cancel, name='order_cancel'),
+    path('review/add/item/<int:order_detail_id>/', views.add_product_review, name='add_product_review'),
+     # URL mới cho API chat
+    path('api/gemini-chat/', views.gemini_chat_view, name='gemini_chat_api'),
+    path('checkout/', views.cart_checkout, name='cart_checkout'),
+    path('payment/webhook/', views.payment_webhook_receiver, name='payment_webhook'), # Cho PayOS gọi
+    path('payment/return/', views.payment_return_page, name='payment_return'),     # Cho người dùng
+    path('payment/cancel/', views.payment_cancel_page, name='payment_cancel'),   # Cho người dùng
+    path('orders/status-change/<int:oid>/<str:action>/', views.admin_change_order_status, name='admin_change_order_status'),
+
+    path('review/add/<int:order_detail_id>/', views.add_product_review, name='add_product_review'),
 ]
 
 if settings.DEBUG:

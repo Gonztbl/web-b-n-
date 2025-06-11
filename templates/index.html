@@ -1,110 +1,109 @@
 {% extends 'base/navbar.html' %}
 {% load static %}
+{% comment %} {% load mathfilters %} - Bỏ nếu không dùng mathfilters trong template này {% endcomment %}
 
-{% block title_extend %}Shop - Home{% endblock %}
-{% load mathfilters %}
+{% block title_extend %}Cửa hàng - Chào mừng bạn{% endblock %}
+
 {% block head_extend %}
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}"> {# File CSS riêng cho trang index nếu có #}
     <style>
+        /* Thêm một chút style tùy chỉnh cho card sản phẩm nổi bật nếu cần */
+        .card-featured .card-img-top {
+            height: 220px; /* Điều chỉnh chiều cao ảnh nếu muốn */
+            object-fit: cover; /* Đảm bảo ảnh che phủ không bị méo */
+        }
         .jumbotron-homepage {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'C:\Users\ASUS\Downloads\ShopManagement-master\ShopManagement-master\static\staticfiles\images\index_bg.png' %}"); /* Add a background image */
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("{% static 'images/homepage-banner.jpg' %}"); /* Ví dụ ảnh nền cho Jumbotron */
             background-size: cover;
             background-position: center;
-            color: white;
+            color: #fff; /* Màu chữ trên Jumbotron */
             padding: 4rem 2rem;
-            border-radius: .5rem;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
         }
-        .jumbotron-homepage h1 {
-            font-size: 3.5rem;
-            font-weight: 300;
-        }
-        .jumbotron-homepage .lead {
-            font-size: 1.5rem;
-        }
-        .featured-section {
-            padding: 3rem 0;
+        .jumbotron-homepage h1, .jumbotron-homepage .lead {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         .featured-section h2 {
-            color: #e9ecef; /* Light color for dark background */
+            color: #333; /* Màu tiêu đề cho phần sản phẩm nổi bật */
             margin-bottom: 2rem;
-        }
-        .card-featured {
-            background-color: rgba(52, 58, 64, 0.8);
-            color: white;
-            border: none;
-            transition: transform .2s;
-        }
-        .card-featured:hover {
-            transform: scale(1.03);
-        }
-        .card-featured img {
-            height: 180px;
-            object-fit: cover;
+            font-weight: bold;
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="jumbotron jumbotron-homepage rounded-lg">
-            <h1 class="display-4">Welcome to Our Shop!</h1>
-            <p class="lead">Discover amazing products and enjoy your shopping experience.</p>
-            <hr class="my-4 border-light">
-            <p>Your one-stop destination for quality and value. Explore our collections today.</p>
-            <a class="btn btn-primary btn-lg mt-3" href="{% url 'products:product_list' %}" role="button">
-                Shop Now <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
-
-        {% comment %} Optional: Featured Products Section {% endcomment %}
-        {% comment %}
-        <section class="featured-section text-center">
-            <h2>Featured Products</h2>
-            <div class="row">
-                <!-- Example Featured Product Card (repeat for multiple) -->
-                <!-- You would need to pass featured products from your view to this template -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card card-featured h-100">
-                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product">
-                        <div class="card-body">
-                            <h5 class="card-title">Sample Product</h5>
-                            <p class="card-text">A short description of this featured item.</p>
-                            <a href="#" class="btn btn-outline-info">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card card-featured h-100">
-                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Another Item</h5>
-                            <p class="card-text">This item is also great and worth checking out.</p>
-                            <a href="#" class="btn btn-outline-info">View Details</a>
-                        </div>
-                    </div>
-                </div>
-                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card card-featured h-100">
-                        <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Featured Product 3">
-                        <div class="card-body">
-                            <h5 class="card-title">Special Offer</h5>
-                            <p class="card-text">Don't miss out on this limited time offer!</p>
-                            <a href="#" class="btn btn-outline-info">View Details</a>
-                        </div>
-                    </div>
-                </div>
+    <div class="container-fluid px-0"> {# Sử dụng container-fluid cho Jumbotron chiếm toàn bộ chiều rộng #}
+        <div class="jumbotron jumbotron-homepage rounded-0 mb-0 text-center"> {# rounded-0 để bỏ bo góc, mb-0 nếu section dưới sát #}
+            <div class="container"> {# Container bên trong để giữ nội dung không quá rộng #}
+                <h1 class="display-4">Chào mừng đến với Cửa hàng của chúng tôi!</h1>
+                <p class="lead">Khám phá các sản phẩm tuyệt vời và tận hưởng trải nghiệm mua sắm của bạn.</p>
+                <hr class="my-4 border-light">
+                <p>Điểm đến duy nhất của bạn cho chất lượng và giá trị. Khám phá bộ sưu tập của chúng tôi ngay hôm nay.</p>
+                <a class="btn btn-primary btn-lg mt-3" href="{% url 'products:product_list' %}" role="button">
+                    Mua sắm ngay <i class="fas fa-arrow-right ml-1"></i>
+                </a>
             </div>
-        </section>
+        </div>
+    </div>
+
+    <div class="container mt-5 mb-5">
+        {% comment %}
+        Phần này giả định view 'home' của bạn (hoặc view nào render 'index.html')
+        truyền một biến context tên là 'featured_products' chứa danh sách các Product objects.
+        Ví dụ trong products/views.py, hàm home:
+        featured_products = Product.objects.filter(quantity_in_stock__gt=0).order_by('?')[:3] // Lấy 3 sản phẩm ngẫu nhiên còn hàng
+        context = {'featured_products': featured_products}
+        return render(request, 'index.html', context)
         {% endcomment %}
 
+        {% if featured_products %}
+        <section class="featured-section text-center">
+            <h2 style="color:red">Sản phẩm nổi bật</h2>
+            <div class="row justify-content-center">
+                {% for product in featured_products %}
+                <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+                    <div class="card card-featured h-100 shadow-sm">
+                        <a href="{% url 'products:product_details' pid=product.product_id %}">
+                            {% if product.product_image %}
+                                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.product_name }}">
+                            {% else %}
+                                <img src="{% static 'images/default-product.png' %}" class="card-img-top" alt="Ảnh sản phẩm mặc định">
+                                {% comment %}
+                                    ĐỂ DÒNG TRÊN HOẠT ĐỘNG, BẠN CẦN CÓ FILE:
+                                    ShopManagement-master/static/images/default-product.png
+                                {% endcomment %}
+                            {% endif %}
+                        </a>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">
+                                <a href="{% url 'products:product_details' pid=product.product_id %}" class="text-red stretched-link text-decoration-none">{{ product.product_name }}</a>
+                            </h5>
+                            <p class="card-text text-muted small">{{ product.company }}</p>
+                            <p class="card-text flex-grow-1">{{ product.product_description|truncatewords:15 }}</p>
+                            <div class="mt-auto text-center">
+                                <p class="h5 text-primary font-weight-bold mb-3"> {{ product.sell_price|floatformat:0 }} VND</p>
+                                <a href="{% url 'products:product_details' pid=product.product_id %}" class="btn btn-outline-info btn-sm" style="color:red">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% else %}
+            <div class="text-center py-5">
+                <p class="lead text-muted">Hiện tại không có sản phẩm nổi bật nào. Vui lòng quay lại sau!</p>
+            </div>
+        {% endif %}
+
+        {% comment %} Hiển thị messages của Django (nếu có) {% endcomment %}
         {% if messages %}
             <div class="row justify-content-center mt-4">
                 <div class="col-md-8">
                     {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
                         {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>

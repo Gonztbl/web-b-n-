@@ -1,0 +1,253 @@
+/* auth_style.css (Phiên bản đã dọn dẹp và sửa lỗi) */
+:root {
+    --primary-green: #25a550;
+    --text-dark: #333;
+    --text-light: #777;
+    --border-color: #ddd;
+    --white: #fff;
+    --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    --text-on-dark-bg: #ffffff;
+    --light-gray-bg-for-form-column: #f0f2f5; /* Nền cho cột form nếu không muốn thấy ảnh nền body */
+}
+
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url("../images/products_bg.jpg"); /* Đường dẫn đến ảnh nền đàn bò */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: var(--text-dark);
+}
+
+.auth-page-container {
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+}
+
+/* Cột trái (Text trên ảnh nền đàn bò) */
+.auth-info-column {
+    flex: 1;
+    color: var(--text-on-dark-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+}
+
+.auth-info-column .info-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.3;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+}
+
+.auth-info-column .info-subtitle {
+    font-size: 1.3rem;
+    max-width: 500px;
+    line-height: 1.6;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
+
+/* Cột phải (Form) */
+.auth-form-column {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    /* Nếu bạn muốn cột form có nền xám mờ thay vì thấy ảnh nền body, bỏ comment dòng dưới: */
+    /* background-color: var(--light-gray-bg-for-form-column); */
+}
+
+.auth-form-card {
+    background-color: var(--white);
+    padding: 35px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-form-card .form-header .title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.auth-form-card .form-header .subtitle {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px 12px 50px; /* top right bottom left - Đặt padding-left ở đây */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-dark);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.2rem rgba(37, 165, 80, 0.2);
+}
+
+.input-icon {
+    position: absolute;
+    right:350px; /* Đặt icon cách mép trái 15px */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1.1rem;
+    pointer-events: none; /* Để click xuyên qua icon vào input nếu cần */
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.form-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+}
+
+.forgot-password-link {
+    color: var(--primary-green);
+    text-decoration: none;
+    font-weight: 500;
+}
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+.btn-submit-auth {
+    width: 100%;
+    background-color: var(--primary-green);
+    color: var(--white);
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-transform: uppercase;
+}
+
+.btn-submit-auth:hover {
+    background-color: #1e8a41;
+}
+
+.auth-switch-text {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+.auth-switch-text a {
+    color: var(--primary-green);
+    font-weight: 600;
+    text-decoration: none;
+}
+.auth-switch-text a:hover {
+    text-decoration: underline;
+}
+
+.messages-container {
+    position: fixed;
+    top: 80px; /* Điều chỉnh nếu navbar có chiều cao khác */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: auto;
+    max-width: 90%;
+}
+.alert-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px 20px;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.alert-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .auth-info-column {
+        display: none;
+    }
+    .auth-form-column {
+        flex-basis: 100%;
+        padding: 20px;
+    }
+    .auth-form-card {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form-card .form-header .title {
+        font-size: 1.6rem;
+    }
+    .form-control, .btn-submit-auth {
+        font-size: 0.95rem;
+        /* padding cho .form-control đã được định nghĩa ở trên và sẽ áp dụng ở đây */
+    }
+    /* Nếu cần padding-left khác cho mobile, bạn có thể ghi đè ở đây */
+    /* .form-control {
+        padding-left: 45px;
+    } */
+    .auth-form-card {
+        padding: 25px 20px;
+    }
+    .messages-container {
+        top: 70px;
+    }
+}

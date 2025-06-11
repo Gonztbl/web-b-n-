@@ -4,7 +4,8 @@
 {% block title_extend %}{{product.product_name}}{% endblock %}
 
 {% block head_extend %}
-        <link rel="stylesheet" href="{% static 'css/details.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/details.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -12,43 +13,43 @@
         <div class="row justify-content-center mt-5">
             <div class="col-12 col-md-6 p-5 bg-light">
                 <!-- <form action="/admin/products/accept_change/{{product.product_id}}" method="post"> -->
-                <form action="{{url}}" method="post">
+                <form action="{{url}}" method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}
 
                     <div class="form-group">
-                        <label for="product_id">Product id</label>
-                        <input type="text" class="form-control" id="product_id" name="product_id" value="{{product.product_id}}">
+                        <label for="product_id">Mã sản phẩm</label>
+                        <input type="text" class="form-control" id="product_id" name="product_id" value="{{product.product_id}}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="product_name">Product name</label>
+                        <label for="product_name">Tên sản phẩm</label>
                         <input type="text" class="form-control" id="product_name" name="product_name" value="{{product.product_name}}" maxlength="25">
                     </div>
-<div class="form-group">
-    <label for="product_image">Product image</label>
-    <input type="file" class="form-control" id="product_image" name="product_image">
-    {% if product.product_image %}
-        <small class="text-muted">Current image: <a href="{{ product.product_image.url }}">{{ product.product_image.url }}</a></small>
-    {% endif %}
-</div>
                     <div class="form-group">
-                        <label for="company">Company</label>
+                        <label for="product_image">Ảnh sản phẩm</label>
+                        <input type="file" class="form-control-file" id="product_image" name="product_image">
+                        {% if product.product_image %}
+                            <small class="text-muted">Ảnh hiện tại: <a href="{{ product.product_image.url }}">{{ product.product_image.name }}</a></small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Nhà sản xuất</label>
                         <input type="text" class="form-control" id="company" name="company" value="{{product.company}}" maxlength="25">
                     </div>
                     <div class="form-group">
-                        <label for="product_description">Product description</label>
-                        <input type="text" class="form-control" id="product_description" name="product_description" value="{{product.product_description}}">
+                        <label for="product_description">Mô tả sản phẩm</label>
+                        <textarea class="form-control" id="product_description" name="product_description" rows="3">{{product.product_description}}</textarea>
                     </div>
                     <div class="form-group">
-                        <label for="quantity">Quantity in stock</label>
-                        <input type="text" class="form-control" id="quantity" name="quantity" value="{{product.quantity_in_stock}}">
+                        <label for="quantity">Số lượng tồn kho</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="{{product.quantity_in_stock}}" min="0">
                     </div>
                     <div class="form-group">
-                        <label for="price">Sell price</label>
-                        <input type="text" class="form-control" id="price" name="price" value="{{product.sell_price}}">
+                        <label for="price">Giá bán</label>
+                        <input type="number" class="form-control" id="price" name="price" value="{{product.sell_price}}" step="0.01" min="0">
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit <i class="fas fa-check"></i></button>
-                    <a href="/admin/products/delete/{{product.product_id}}" class="btn btn-danger">Delete <i class="fas fa-trash-alt"></i></a>
+                    <button type="submit" class="btn btn-primary">Gửi <i class="fas fa-check"></i></button>
+                    <a href="/admin/products/delete/{{product.product_id}}" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Xóa <i class="fas fa-trash-alt"></i></a>
                 </form>
             </div>
         </div>

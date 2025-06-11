@@ -2,161 +2,139 @@
 {% load static %}
 {% load mathfilters %}
 
-{% block title_extend %}Order #{{ order.order_id }} Details{% endblock %}
+{% block title_extend %}Chi tiết Đơn hàng #{{ order.order_id }}{% endblock %}
 
 {% block head_extend %}
-    <link rel="stylesheet" href="{% static 'css/orderdetails.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {# Thêm một ít CSS để làm đẹp trạng thái #}
     <style>
-        .order-detail-item {
-            background-color: rgba(52, 58, 64, 0.9);
-            color: #f8f9fa;
-            border: 1px solid #444;
-        }
-        .order-detail-item img { max-height: 80px; object-fit: contain; }
-        .order-summary-panel {
-            background-color: rgba(33, 37, 41, 0.95);
-            color: #f8f9fa;
-            border: 1px solid #555;
-        }
-        .status-badge {
-            font-size: 1.2rem;
-            padding: .5em .75em;
-        }
-        .status-pending { background-color: #ffc107; color: #212529;}
-        .status-confirmed { background-color: #28a745; }
-        .status-processing { background-color: #17a2b8; }
-        .status-shipped { background-color: #007bff; }
-        .status-delivered { background-color: #6f42c1; }
-        .status-canceled { background-color: #dc3545; }
-
-        .admin-actions .btn { margin-bottom: 0.5rem; } /* Thêm khoảng cách cho các nút admin */
+        .status-badge { color: #fff; padding: 0.5em 0.75em; border-radius: 0.25rem; font-size: 0.9em; font-weight: bold; }
+        .status-pending, .status-pendpay { background-color: #ffc107; color: #212529; }
+        .status-confirmed { background-color: #17a2b8; }
+        .status-processing { background-color: #007bff; }
+        .status-shipped { background-color: #fd7e14; }
+        .status-delivered { background-color: #28a745; }
+        .status-canceled, .status-failed, .status-payerror, .status-stockerr, .status-payexp { background-color: #dc3545; }
+        .order-summary-panel { background-color: rgba(255, 255, 255, 0.05); }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid mt-5 pt-3">
-        <section id="header" class="mb-4">
-            <h1 class="text-light pl-lg-5 pl-3">Order Details <i class="fas fa-receipt"></i></h1>
-            <hr class="my-4 border-light">
-        </section>
+<div class="container-fluid mt-5 pt-3">
+    <section id="header" class="mb-4">
+        <h1 class="text-light pl-lg-5 pl-3">Chi tiết Đơn hàng <i class="fas fa-receipt"></i></h1>
+        <hr class="my-4 border-light">
+    </section>
 
-        <section id="order_items_list">
-            <div class="row justify-content-center my-3">
-                <div class="col-lg-8 col-md-12 mb-3">
-                    <h4 class="text-light mb-3">Items in Order #{{ order.order_id }}</h4>
-                    {% if details %}
-                        {% for detail_item in details %}
-                            <div class="row order-detail-item my-2 p-3 rounded rounded-lg align-items-center">
-                                <div class="col-md-2 col-3 text-center">
-                                    {% if detail_item.product_id %}
-                                        <a href="{% url 'products:product_details' pid=detail_item.product_id.product_id %}">
-                                        {% if detail_item.product_id.product_image %}
-                                            <img src="{{detail_item.product_id.product_image.url}}" class="img-thumbnail img-responsive" alt="{{ detail_item.product_id.product_name }}">
-                                        {% else %}
-                                            <img src="{% static 'images/default-product.png' %}" class="img-thumbnail img-responsive" alt="Default product image">
-                                        {% endif %}
-                                        </a>
+    <div class="row justify-content-center my-3">
+        <!-- Cột thông tin sản phẩm -->
+        <div class="col-lg-8 col-md-12 mb-3">
+            <h4 class="text-light mb-3">Các sản phẩm trong Đơn hàng #{{ order.order_id }}</h4>
+            <div class="table-responsive">
+                <table class="table table-hover table-dark">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-right">Đơn giá</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-right">Thành tiền</th>
+                            <th class="text-center">Đánh giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item_info in order_items_with_review_status %}
+                            {% with detail=item_info.detail product=item_info.detail.product %}
+                            <tr>
+                                <td>
+                                    {# --- KHỐI CODE ĐÃ SỬA LỖI HOÀN TOÀN --- #}
+                                    {% if product %}
+                                        <div class="d-flex align-items-center">
+                                            {% if product.product_image %}
+                                                <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="img-thumbnail mr-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <img src="{% static 'images/default-product.png' %}" alt="Mặc định" class="img-thumbnail mr-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'products:product_details' pid=product.product_id %}" class="text-light font-weight-bold">{{ product.product_name }}</a>
+                                                <br><small class="text-muted">Mã: {{ product.product_id }}</small>
+                                            </div>
+                                        </div>
                                     {% else %}
-                                        <img src="{% static 'images/default-product.png' %}" class="img-thumbnail img-responsive" alt="Product not available">
+                                        <span class="text-muted font-italic">[Sản phẩm đã bị xóa]</span>
                                     {% endif %}
-                                </div>
-                                <div class="col-md-10 col-9">
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <h5 class="font-weight-bold mb-1">
-                                                {% if detail_item.product_id %}
-                                                    <a href="{% url 'products:product_details' pid=detail_item.product_id.product_id %}" class="text-light">
-                                                        {{detail_item.product_id.product_name}}
-                                                    </a>
-                                                {% else %}
-                                                    <span class="text-light">Product N/A (deleted)</span>
-                                                {% endif %}
-                                            </h5>
-                                            <p class="mb-1 small">ID: #{{detail_item.product_id.product_id|default:"N/A"}}</p>
-                                            <p class="mb-1">Price each:
-                                                <span class="text-info">
-                                                    {% if detail_item.product_id %}
-                                                        ${{detail_item.product_id.sell_price|floatformat:2}}
-                                                    {% else %}
-                                                        N/A
-                                                    {% endif %}
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div class="col-md-5 text-md-right">
-                                            <p class="mb-1">Quantity: <span class="text-primary font-weight-bold">{{detail_item.quantity}}</span></p>
-                                            <p class="mb-0">Item Total:
-                                                <span class="text-info font-weight-bold">
-                                                    {% if detail_item.product_id %}
-                                                        ${{detail_item.quantity|mul:detail_item.product_id.sell_price|floatformat:2}}
-                                                    {% else %}
-                                                        (Price N/A)
-                                                    {% endif %}
-                                                </span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </td>
+                                <td class="text-right align-middle">{% if product %}{{ product.sell_price|floatformat:0 }} VND{% else %}-{% endif %}</td>
+                                <td class="text-center align-middle">{{ detail.quantity }}</td>
+<td class="text-right align-middle">{% if product %}{{ detail.quantity|mul:product.sell_price|floatformat:0 }} VND{% else %}-{% endif %}</td>
+                                <td class="text-center align-middle">
+                                    {% if item_info.can_review_item %}
+                                        <a href="{% url 'products:add_product_review' order_detail_id=detail.pk %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-pencil-alt"></i> Viết đánh giá
+                                        </a>
+                                    {% elif item_info.is_reviewed %}
+                                        <span class="badge badge-success p-2" style="font-size: 0.85em;"><i class="fas fa-check-circle"></i> Đã đánh giá</span>
+                                    {% elif not product %}
+                                        <span class="badge badge-secondary p-2" style="font-size: 0.85em;">Sản phẩm đã xóa</span>
+                                    {% elif order.status != "Delivered" %}
+                                        <span class="badge badge-light p-2 text-dark" style="font-size: 0.85em;">Chờ giao hàng</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center font-italic">Không có sản phẩm nào trong đơn hàng này.</td>
+                            </tr>
                         {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Cột tóm tắt đơn hàng -->
+        <div class="col-lg-4 col-md-12">
+            <div class="order-summary-panel p-3 rounded">
+                <h4 class="card-title font-weight-bold">Tóm tắt đơn hàng</h4>
+                <hr class="my-3 border-secondary">
+                <p><strong>Mã đơn hàng:</strong> #{{ order.order_id }}</p>
+                <p><strong>Tài khoản đặt:</strong> {{ order.user }}</p>
+                <p><strong>Tên người nhận:</strong> {{ order.customer_name }}</p>
+                <p><strong>Số điện thoại:</strong> {{ order.phone_number }}</p>
+                <p><strong>Địa chỉ:</strong> {{ order.address }}</p>
+                <p><strong>Ngày đặt:</strong> {{ order.created_at|date:"d/m/Y, H:i" }}</p>
+                <hr class="my-3 border-secondary">
+                <div class="mb-3">
+                    <strong>Trạng thái:</strong>
+                    <span class="status-badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                </div>
+
+                {% if user.is_superuser %}
+                <div class="admin-actions mt-3 mb-3 p-3 border rounded" style="background-color: rgba(255,255,255,0.05);">
+                    <p class="small text-light mb-2"><strong>Hành động của Quản trị viên:</strong></p>
+                    {% if order.status == "Confirmed" %}
+                        <a href="{% url 'products:admin_change_order_status' oid=order.order_id action='process' %}" class="btn btn-info btn-sm d-block mb-2"><i class="fas fa-cogs"></i> Đánh dấu là Đang xử lý</a>
+                    {% elif order.status == "Processing" %}
+                        <a href="{% url 'products:admin_change_order_status' oid=order.order_id action='ship' %}" class="btn btn-primary btn-sm d-block mb-2"><i class="fas fa-truck"></i> Đánh dấu là Đã gửi hàng</a>
+                    {% elif order.status == "Shipped" %}
+                        <a href="{% url 'products:admin_change_order_status' oid=order.order_id action='deliver' %}" class="btn btn-success btn-sm d-block mb-2"><i class="fas fa-check-circle"></i> Đánh dấu là Đã giao hàng</a>
+                    {% elif order.status == "Delivered" %}
+                        <p class="text-success font-weight-bold"><i class="fas fa-check-circle"></i> Đơn hàng hoàn tất</p>
+                    {% elif order.status in "Canceled,Failed,PayError,StockErr,PayExp" %}
+                        <p class="text-danger font-weight-bold"><i class="fas fa-times-circle"></i> Đơn hàng đã kết thúc</p>
                     {% else %}
-                        <p class="text-light">No items found in this order.</p>
+                        <p class="text-warning font-weight-bold"><i class="fas fa-hourglass-half"></i> Chờ xử lý</p>
                     {% endif %}
                 </div>
-                <div class="col-lg-4 col-md-12">
-                    <div class="order-summary-panel p-3 rounded rounded-lg">
-                        <h4 class="card-title font-weight-bold">Order Summary</h4>
-                        <hr class="my-3 border-secondary">
-                        <p><strong>Order ID:</strong> #{{ order.order_id }}</p>
-                        <p><strong>User (Username):</strong> {{ order.user }}</p> {# Hiển thị username của người đặt hàng #}
-                        <p><strong>Customer Name (Shipping):</strong> {{ order.customer_name }}</p>
-                        <p><strong>Phone:</strong> {{ order.phone_number }}</p>
-                        <p><strong>Address:</strong> {{ order.address }}</p>
-                        <p><strong>Date Placed:</strong> {{ order.created_at|date:"F d, Y, P" }}</p>
-                        <hr class="my-3 border-secondary">
-                        <div class="mb-3">
-                            <strong>Status:</strong>
-                            <span class="badge status-{{ order.status|lower }} status-badge">{{ order.get_status_display }}</span>
-                        </div>
+                {% endif %}
 
-                        {% if user.is_superuser %}
-                            <div class="admin-actions mt-2">
-                                <p class="small text-muted mb-1">Admin Actions:</p>
-                                {% if order.status == "Pending" %}
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='confirm' %}" class="btn btn-success btn-sm d-block">Confirm Order</a>
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
-                                {% elif order.status == "Confirmed" %}
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='process' %}" class="btn btn-info btn-sm d-block">Mark as Processing</a>
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
-                                {% elif order.status == "Processing" %}
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='ship' %}" class="btn btn-primary btn-sm d-block">Mark as Shipped</a>
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='cancel' %}" class="btn btn-danger btn-sm d-block" onclick="return confirm('Admin: Are you sure you want to cancel this order (#{{order.order_id}})? Stock will be restored.');">Cancel Order</a>
-                                {% elif order.status == "Shipped" %}
-                                    <a href="{% url 'order_status_change' oid=order.order_id action='deliver' %}" class="btn btn-secondary btn-sm d-block">Mark as Delivered</a>
-                                {% elif order.status == "Delivered" %}
-                                    <p class="text-success font-weight-bold"><i class="fas fa-check-circle"></i> Order Delivered</p>
-                                {% elif order.status == "Canceled" %}
-                                     <p class="text-danger font-weight-bold"><i class="fas fa-times-circle"></i> Order Canceled</p>
-                                {% endif %}
-                            </div>
-                        {% elif user.is_authenticated and not user.is_superuser and order.user == user.username %}
-                            {# Nút hủy cho người dùng thường #}
-                            {% if order.status == "Pending" %}
-                                <a href="{% url 'products:order_cancel' oid=order.order_id %}" class="btn btn-danger btn-block mt-3" onclick="return confirm('Are you sure you want to cancel this order (#{{order.order_id}})?');">
-                                    Cancel My Order <i class="fas fa-times-circle"></i>
-                                </a>
-                            {% endif %}
-                        {% endif %}
-
-                        <hr class="my-3 border-secondary">
-                        <div class="d-flex justify-content-between">
-                            <h5>Total Price:</h5>
-                            <h5 class="font-weight-bold text-info">${{ order.total_price|floatformat:2 }}</h5>
-                        </div>
-                        <a href="{% url 'products:orders_get' %}" class="btn btn-outline-secondary btn-block mt-3"><i class="fas fa-arrow-left"></i> Back to Orders</a>
-                    </div>
+                <hr class="my-3 border-secondary">
+                <div class="d-flex justify-content-between">
+                    <h5>Tổng tiền:</h5>
+                    <h5 class="font-weight-bold text-info">{{ order.total_price|floatformat:0 }} VND</h5>
                 </div>
+                <a href="{% url 'products:orders_get' %}" class="btn btn-outline-secondary btn-block mt-3"><i class="fas fa-arrow-left"></i> Quay lại danh sách</a>
             </div>
-        </section>
+        </div>
     </div>
+</div>
 {% endblock %}

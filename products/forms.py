@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product
+from .models import Product,ProductReview
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -23,3 +23,15 @@ class ProductForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if is_edit and self.instance and self.instance.pk:
             self.fields['product_id'].widget.attrs['readonly'] = True
+class ProductReviewForm(forms.ModelForm):
+    class Meta:
+        model = ProductReview
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4, 'placeholder': 'Chia sẻ cảm nhận của bạn về sản phẩm...'}),
+        }
+        labels = {
+            'rating': 'Xếp hạng của bạn',
+            'comment': 'Nội dung đánh giá (tùy chọn)',
+        }

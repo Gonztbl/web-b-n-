@@ -7,6 +7,15 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 
+# SỬA Ở ĐÂY: Gom các View vào và thêm reverse_lazy
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView
+)
+from django.urls import reverse_lazy
+
 # View đăng ký
 def register(request):
     if request.method == 'POST':
@@ -79,3 +88,19 @@ def logout(request):
     auth_logout(request)  # Đăng xuất người dùng
     messages.success(request, "Bạn đã đăng xuất thành công.")  # Thông báo thành công
     return redirect('home')  # Chuyển hướng về trang chủ sau khi đăng xuất
+# View lấy lại mật khẩu
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'auth/password_reset.html'
+    email_template_name = 'auth/password_reset_email.html'
+    subject_template_name = 'auth/password_reset_subject.txt'
+    success_url = reverse_lazy('password_reset_done')
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'auth/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'auth/password_reset_confirm.html'
+    success_url = reverse_lazy('password_reset_complete')
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'auth/password_reset_complete.html'

@@ -1,0 +1,118 @@
+
+{% extends 'base/navbar.html' %}
+{% load static %}
+
+{% block title_extend %}Đánh giá: {{ product.product_name }}{% endblock %}
+
+{% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/details.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <section id="header" class="mb-4">
+        <h1 class="text-light pl-lg-5 pl-3">Viết đánh giá <i class="fas fa-pencil-alt"></i></h1>
+        <hr class="my-4 border-light">
+    </section>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7">
+            <div class="form-review-container">
+                <div class="text-center mb-4">
+                    <h4 class="mb-2">Đánh giá cho sản phẩm: <strong class="text-info">{{ product.product_name }}</strong></h4>
+                    <p class="text-muted small">Từ Đơn hàng #{{ order.order_id }}</p>
+                    
+                    {% if product.product_image %}
+                        <img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" class="product-review-img">
+                    {% else %}
+                        <img src="{% static 'images/default-product.png' %}" alt="Default" class="product-review-img">
+                    {% endif %}
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger small">
+                            {% for error in form.non_field_errors %}
+                                <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        {{ form.rating.label_tag }}
+                        {% if form.rating.errors %}<div class="text-danger small mt-1">{{ form.rating.errors|join:", " }}</div>{% endif %}
+                        {{ form.rating }}
+                        {# Thêm hiển thị sao tương ứng với lựa chọn #}
+                        <div id="selected-stars" class="mt-2 rating-stars-select">
+                            <!-- Sao sẽ được cập nhật bằng JS -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.comment.label_tag }}
+                        {% if form.comment.errors %}<div class="text-danger small mt-1">{{ form.comment.errors|join:", " }}</div>{% endif %}
+                        {{ form.comment }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Gửi đánh giá <i class="fas fa-paper-plane"></i></button>
+                    <a href="{% url 'products:order_details' oid=order.order_id %}" class="btn btn-outline-secondary btn-block mt-2">Hủy</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 col-md-9 col-lg-7">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <br><br>
+</div>
+{% endblock %}
+
+{% block script_extend %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingSelect = document.querySelector('select[name="rating"]');
+    const selectedStarsDiv = document.getElementById('selected-stars');
+
+    function updateStarsDisplay(ratingValue) {
+        if (!selectedStarsDiv) return;
+        let starsHtml = '';
+        const rating = parseInt(ratingValue);
+        if (isNaN(rating) || rating < 1) {
+             selectedStarsDiv.innerHTML = '<span class="text-muted small">Chọn mức đánh giá của bạn</span>';
+             return;
+        }
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                starsHtml += '<i class="fas fa-star text-warning mr-1"></i>';
+            } else {
+                starsHtml += '<i class="far fa-star text-secondary mr-1"></i>';
+            }
+        }
+        selectedStarsDiv.innerHTML = starsHtml;
+    }
+
+    if (ratingSelect) {
+        ratingSelect.addEventListener('change', function() {
+            updateStarsDisplay(this.value);
+        });
+        // Initial display
+        updateStarsDisplay(ratingSelect.value);
+    }
+});
+</script>
+{% endblock %}

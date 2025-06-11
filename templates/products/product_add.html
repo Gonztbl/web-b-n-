@@ -1,37 +1,20 @@
-
-
 {% extends 'base/navbar.html' %}
 {% load static %}
 
 {% block title_extend %}
-    {% if is_edit and product %}Edit: {{ product.product_name }}{% else %}Add New Product{% endif %}
+    {% if is_edit and product %}Chỉnh sửa: {{ product.product_name }}{% else %}Thêm sản phẩm mới{% endif %}
 {% endblock %}
 
 {% block head_extend %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/details.css' %}">
-    <style>
-        .form-container {
-            background-color: rgba(248, 249, 250, 0.95);
-            padding: 2rem;
-            border-radius: .5rem;
-            color: #212529;
-        }
-        .current-image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            border-radius: .25rem;
-            margin-bottom: 1rem;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-5 pt-4">
     <section id="header" class="mb-4">
         <h1 class="text-light pl-lg-5 pl-3">
-            {% if is_edit and product %}Edit Product <i class="fas fa-edit"></i>{% else %}Add New Product <i class="fas fa-plus-circle"></i>{% endif %}
+            {% if is_edit and product %}Chỉnh sửa sản phẩm <i class="fas fa-edit"></i>{% else %}Thêm sản phẩm mới <i class="fas fa-plus-circle"></i>{% endif %}
         </h1>
         <hr class="my-4 border-light">
     </section>
@@ -41,9 +24,9 @@
             <div class="form-container">
                 {% if is_edit and product.product_image %}
                     <div class="text-center mb-3">
-                        <p class="text-muted">Current Image:</p>
+                        <p class="text-muted">Ảnh hiện tại:</p>
                         <img src="{{ product.product_image.url }}" 
-                             alt="Current Product Image" 
+                             alt="Ảnh sản phẩm hiện tại" 
                              class="current-image-preview">
                     </div>
                 {% endif %}
@@ -52,7 +35,7 @@
                     {% csrf_token %}
                     
                     <div class="form-group">
-                        <label for="id_product_id">Product ID</label>
+                        <label for="id_product_id">Mã sản phẩm</label>
                         <input type="text" class="form-control {% if form.product_id.errors %}is-invalid{% endif %}" 
                                id="id_product_id" name="product_id" 
                                value="{% if form.product_id.value %}{{ form.product_id.value }}{% elif product %}{{ product.product_id }}{% endif %}" 
@@ -61,12 +44,12 @@
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                         {% if is_edit and product %}
-                            <small class="form-text text-muted">Product ID cannot be changed after creation.</small>
+                            <small class="form-text text-muted">Mã sản phẩm không thể thay đổi sau khi tạo.</small>
                         {% endif %}
                     </div>
 
                     <div class="form-group">
-                        <label for="id_product_name">Product Name</label>
+                        <label for="id_product_name">Tên sản phẩm</label>
                         <input type="text" class="form-control {% if form.product_name.errors %}is-invalid{% endif %}" 
                                id="id_product_name" name="product_name" 
                                value="{% if form.product_name.value %}{{ form.product_name.value }}{% elif product %}{{ product.product_name }}{% endif %}" maxlength="25" required>
@@ -76,21 +59,21 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="id_product_image">Product Image</label>
+                        <label for="id_product_image">Ảnh sản phẩm</label>
                         <input type="file" class="form-control-file {% if form.product_image.errors %}is-invalid{% endif %}" 
                                id="id_product_image" name="product_image">
                         {% for error in form.product_image.errors %}
                             <div class="invalid-feedback">{{ error }}</div>
                         {% endfor %}
                         {% if is_edit and product.product_image %}
-                             <small class="form-text text-muted">Leave blank to keep the current image.</small>
+                             <small class="form-text text-muted">Để trống để giữ ảnh hiện tại.</small>
                         {% elif is_edit and product and not product.product_image %}
-                             <small class="form-text text-muted">No current image. Upload a new one.</small>
+                             <small class="form-text text-muted">Chưa có ảnh. Tải lên ảnh mới.</small>
                         {% endif %}
                     </div>
 
                     <div class="form-group">
-                        <label for="id_company">Company</label>
+                        <label for="id_company">Nhà sản xuất</label>
                         <input type="text" class="form-control {% if form.company.errors %}is-invalid{% endif %}" 
                                id="id_company" name="company" 
                                value="{% if form.company.value %}{{ form.company.value }}{% elif product %}{{ product.company }}{% endif %}" maxlength="25" required>
@@ -100,7 +83,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="id_product_description">Product Description</label>
+                        <label for="id_product_description">Mô tả sản phẩm</label>
                         <textarea class="form-control {% if form.product_description.errors %}is-invalid{% endif %}" 
                                   id="id_product_description" name="product_description" rows="4" required>{% if form.product_description.value %}{{ form.product_description.value }}{% elif product %}{{ product.product_description }}{% endif %}</textarea>
                         {% for error in form.product_description.errors %}
@@ -109,7 +92,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="id_quantity_in_stock">Quantity in Stock</label>
+                        <label for="id_quantity_in_stock">Số lượng tồn kho</label>
                         <input type="number" class="form-control {% if form.quantity_in_stock.errors %}is-invalid{% endif %}" 
                                id="id_quantity_in_stock" name="quantity_in_stock" 
                                value="{% if form.quantity_in_stock.value %}{{ form.quantity_in_stock.value }}{% elif product %}{{ product.quantity_in_stock }}{% else %}0{% endif %}" min="0" required>
@@ -119,7 +102,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="id_sell_price">Sell Price ($)</label>
+                        <label for="id_sell_price">Giá bán (VND)</label>
                         <input type="number" class="form-control {% if form.sell_price.errors %}is-invalid{% endif %}" 
                                id="id_sell_price" name="sell_price" 
                                value="{% if form.sell_price.value %}{{ form.sell_price.value }}{% elif product %}{{ product.sell_price }}{% else %}0.00{% endif %}" min="0.00" step="0.01" required>
@@ -129,24 +112,24 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        {% if is_edit and product %}Update Product <i class="fas fa-save"></i>{% else %}Add Product <i class="fas fa-plus"></i>{% endif %}
+                        {% if is_edit and product %}Cập nhật sản phẩm <i class="fas fa-save"></i>{% else %}Thêm sản phẩm <i class="fas fa-plus"></i>{% endif %}
                     </button>
                     
                     {% if is_edit and product %}
                          {# Nút Cancel và Delete cho admin edit mode #}
                          <div class="mt-2 d-flex justify-content-between">
-                            <a href="{% url 'products:product_details' pid=product.product_id %}" class="btn btn-outline-secondary" style="width: 48%;">Cancel</a>
+                            <a href="{% url 'products:product_details' pid=product.product_id %}" class="btn btn-outline-secondary" style="width: 48%;">Hủy</a>
                             {# Giả sử URL 'product_delete' được định nghĩa trong admin/urls.py và không có namespace 'admin' #}
                             {# Nếu admin.urls được include với namespace, ví dụ 'admin_panel', thì dùng 'admin_panel:product_delete' #}
                             <a href="{% url 'product_delete' pid=product.product_id %}" 
                                class="btn btn-danger" style="width: 48%;"
-                               onclick="return confirm('Are you sure you want to delete this product: {{ product.product_name|escapejs }}?');">
-                                Delete Product <i class="fas fa-trash-alt"></i>
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này: {{ product.product_name|escapejs }}?');">
+                                Xóa sản phẩm <i class="fas fa-trash-alt"></i>
                             </a>
                          </div>
                     {% else %}
                         {# Nút Cancel cho add mode #}
-                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary btn-block mt-2">Cancel</a>
+                        <a href="{% url 'products:product_list' %}" class="btn btn-outline-secondary btn-block mt-2">Hủy</a>
                     {% endif %}
                 </form>
             </div>
@@ -159,7 +142,7 @@
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
                     <i class="fas fa-info-circle"></i> {{message}}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
