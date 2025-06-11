@@ -5,8 +5,7 @@ django-crispy-forms==2.4
 django-bootstrap4==25.1
 django-countries==7.6.1
 django-mathfilters==1.0.0
-python-dotenv==0.16.0
-python-decouple==3.8
+python-dotenv
 whitenoise==6.6.0
 gunicorn==22.0.0
 stripe==12.1.0
