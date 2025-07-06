@@ -69,19 +69,9 @@ Thay đổi trạng thái đơn hàng (Xác nhận, Xử lý, Gửi hàng, Giao 
 
 📸 Demo & Hình ảnh
 
-(Đây là nơi bạn sẽ chèn hình ảnh hoặc GIF minh họa. Hãy thay thế các URL_TO_YOUR_... bằng đường dẫn thực tế sau khi bạn đã tải ảnh lên)
+![Screenshot 2025-07-06 161157](https://github.com/user-attachments/assets/f0b17e36-c7ba-4373-bffa-b72abec44f05)
 
-Trang chủ & Sản phẩm nổi bật	Chatbot AI Tư vấn
 
-![alt text](URL_TO_YOUR_HOMEPAGE_IMAGE.png)
-	
-![alt text](URL_TO_YOUR_CHATBOT_IMAGE.png)
-
-Giỏ hàng & Thanh toán	Quản lý Đơn hàng (Admin)
-
-![alt text](URL_TO_YOUR_CHECKOUT_PAYOS_GIF.gif)
-	
-![alt text](URL_TO_YOUR_ADMIN_ORDERS_IMAGE.png)
 <br>
 
 🛠️ Công nghệ sử dụng
