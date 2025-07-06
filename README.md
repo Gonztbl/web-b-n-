@@ -66,7 +66,112 @@ Thay đổi trạng thái đơn hàng (Xác nhận, Xử lý, Gửi hàng, Giao 
 ✅ Phân quyền Rõ ràng: Quyền hạn của admin được tách biệt hoàn toàn với người dùng thông thường.
 
 <br>
+📊 Sơ đồ Use Case & Luồng hoạt động
+Các sơ đồ dưới đây mô tả trực quan các tương tác giữa người dùng (actors) và hệ thống, thể hiện rõ ràng các chức năng chính.
+1. Sơ đồ Use Case cho Khách và Khách hàng
+Sơ đồ này thể hiện các hành động của một người dùng chưa đăng nhập (Khách) và một người dùng đã đăng nhập (Khách hàng). Khách hàng kế thừa toàn bộ quyền của Khách và có thêm các chức năng riêng.
+Generated mermaid
+graph TD
+    subgraph "Hệ thống Shop Bán Sữa"
+        UC1(Xem trang chủ &<br>sản phẩm nổi bật)
+        UC2(Xem danh sách sản phẩm)
+        UC3(Tìm kiếm & Lọc sản phẩm)
+        UC4(Xem chi tiết sản phẩm)
+        UC5(Tương tác Chatbot AI)
+        UC6(Đăng ký tài khoản)
+        UC7(Đăng nhập)
+        UC8(Quản lý giỏ hàng<br>Thêm/Xóa/Xem)
+        UC9(Tiến hành thanh toán)
+        UC10(Thanh toán COD)
+        UC11(Thanh toán PayOS/VietQR)
+        UC12(Xem lịch sử &<br>chi tiết đơn hàng)
+        UC13(Hủy đơn hàng)
+        UC14(Viết đánh giá sản phẩm)
+        UC15(Đăng xuất)
+    end
 
+    Khach(Khách)
+    KH(Khách hàng)
+
+    %% Kế thừa: Khách hàng có thể làm mọi việc của Khách
+    KH --|> Khach
+
+    %% Các hành động của Khách
+    Khach --> UC1
+    Khach --> UC2
+    Khach --> UC3
+    Khach --> UC4
+    Khach --> UC5
+    Khach --> UC6
+    Khach --> UC7
+
+    %% Các hành động riêng của Khách hàng
+    KH --> UC8
+    KH --> UC9
+    KH --> UC12
+    KH --> UC13
+    KH --> UC14
+    KH --> UC15
+
+    %% Mối quan hệ giữa các use case
+    UC9 -- <<include>> --> UC10
+    UC9 -- <<include>> --> UC11
+    UC14 -- <<extend>> --> UC12
+Use code with caution.
+Mermaid
+Phân tích chi tiết:
+Actor: Khách (Guest)
+Có thể duyệt xem sản phẩm, tìm kiếm, lọc và xem chi tiết.
+Có thể tương tác với Chatbot AI để được tư vấn.
+Có thể đăng ký tài khoản mới hoặc đăng nhập vào tài khoản đã có.
+Actor: Khách hàng (Customer)
+Kế thừa tất cả các quyền của Khách.
+Quản lý giỏ hàng: Thêm sản phẩm, xem giỏ hàng và xóa sản phẩm.
+Thanh toán: Thực hiện quy trình thanh toán, lựa chọn giữa COD hoặc thanh toán online qua PayOS.
+Quản lý đơn hàng: Xem lại lịch sử các đơn đã đặt, theo dõi trạng thái và hủy đơn hàng (nếu đơn hàng đang ở trạng thái cho phép).
+Viết đánh giá: Để lại nhận xét và xếp hạng cho các sản phẩm đã mua (chỉ khi đơn hàng đã được giao thành công).
+2. Sơ đồ Use Case cho Quản trị viên (Admin)
+Sơ đồ này tập trung vào các chức năng quản lý và vận hành hệ thống dành riêng cho Quản trị viên.
+Generated mermaid
+graph TD
+    subgraph "Hệ thống Quản trị"
+        A_UC1(Đăng nhập)
+        A_UC2(Quản lý Sản phẩm)
+        A_UC3(Quản lý Đơn hàng)
+        A_UC4(Xem chi tiết<br>đơn hàng bất kỳ)
+        A_UC5(Lọc đơn hàng<br>theo trạng thái)
+        A_UC6(Thay đổi<br>trạng thái đơn hàng)
+
+        subgraph "CRUD Sản phẩm"
+            A_UC2_1(Thêm sản phẩm mới)
+            A_UC2_2(Sửa thông tin sản phẩm)
+            A_UC2_3(Xóa sản phẩm)
+        end
+    end
+
+    Admin(Quản trị viên)
+
+    Admin --> A_UC1
+    Admin --> A_UC2
+    Admin --> A_UC3
+
+    A_UC2 -- <<include>> --> A_UC2_1
+    A_UC2 -- <<include>> --> A_UC2_2
+    A_UC2 -- <<include>> --> A_UC2_3
+
+    A_UC3 -- <<include>> --> A_UC4
+    A_UC3 -- <<include>> --> A_UC5
+    A_UC3 -- <<include>> --> A_UC6
+Use code with caution.
+Mermaid
+Phân tích chi tiết:
+Actor: Quản trị viên (Admin)
+Quản lý Sản phẩm (CRUD): Có toàn quyền thêm mới, cập nhật thông tin (tên, giá, mô tả, ảnh, số lượng kho) và xóa sản phẩm khỏi hệ thống.
+Quản lý Đơn hàng:
+Xem toàn bộ đơn hàng từ tất cả khách hàng.
+Lọc đơn hàng theo các trạng thái khác nhau để tiện xử lý (ví dụ: chỉ xem các đơn Confirmed).
+Cập nhật trạng thái của đơn hàng theo quy trình nghiệp vụ: Confirmed -> Processing -> Shipped -> Delivered.
+Có thể chủ động hủy đơn hàng của khách nếu cần thiết.
 📸 Demo & Hình ảnh
 
 ![Screenshot 2025-07-06 161157](https://github.com/user-attachments/assets/f0b17e36-c7ba-4373-bffa-b72abec44f05)
