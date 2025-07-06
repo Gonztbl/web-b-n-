@@ -71,6 +71,20 @@ Thay đổi trạng thái đơn hàng (Xác nhận, Xử lý, Gửi hàng, Giao 
 
 ![Screenshot 2025-07-06 161157](https://github.com/user-attachments/assets/f0b17e36-c7ba-4373-bffa-b72abec44f05)
 
+![Screenshot 2025-07-06 161211](https://github.com/user-attachments/assets/257980a7-65cc-41c3-9b40-dbdfe2f995d6)
+![Screenshot 2025-07-06 161215](https://github.com/user-attachments/assets/e12d2115-3c80-495f-acc4-5c26ed1671a1)
+![Screenshot 2025-07-06 161220](https://github.com/user-attachments/assets/aab1f23f-1c83-4af6-b4f4-584b184e70ad)
+![Screenshot 2025-07-06 161230](https://github.com/user-attachments/assets/f1627333-94bd-4597-afe3-96ce4ff9bf79)
+![Screenshot 2025-07-06 161241](https://github.com/user-attachments/assets/eb955284-4a38-4ab4-8add-b97a8eba1ef2)
+![Screenshot 2025-07-06 161252](https://github.com/user-attachments/assets/2386c83c-1df3-428c-a572-8c1f749ff6ef)
+![Screenshot 2025-07-06 161303](https://github.com/user-attachments/assets/e29ebf78-554d-4bfd-82f8-0b7341ef6e09)
+![Screenshot 2025-07-06 161312](https://github.com/user-attachments/assets/e75daad7-8231-42f0-b7ff-892251196705)
+![Screenshot 2025-07-06 161330](https://github.com/user-attachments/assets/2c229aa2-220d-40ed-9d6c-7b62e69d5322)
+![Screenshot 2025-07-06 161336](https://github.com/user-attachments/assets/3c1a808a-ecb0-4c8a-86d4-e82c2a2462da)
+![Screenshot 2025-07-06 161344](https://github.com/user-attachments/assets/ef091a8f-e902-4234-ab0c-9895bec2fc16)
+![Screenshot 2025-07-06 161349](https://github.com/user-attachments/assets/075e2b84-4d21-4c67-aa25-355e5be4b05a)
+![Screenshot 2025-07-06 161353](https://github.com/user-attachments/assets/330877b5-30ec-4464-a562-ca9614461b31)
+![Screenshot 2025-07-06 161406](https://github.com/user-attachments/assets/530be16e-7850-468c-8a10-df92a8c2a771)
 
 <br>
 
