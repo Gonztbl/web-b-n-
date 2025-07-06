@@ -1,162 +1,308 @@
-# Shop
-</br>
-</br>
-</br>
 
-###
-</br>
-</br>
 
-## Mô tả
----------
-- Đây là một web chuyên về bán giày
-- Được thiết kế đơn giản gọn nhẹ nhưng đầy đủ chức năng để mang sự tiện lợi cho cả người bán lẫn người mua.
-- Giao dịch với khách hàng, tạo ra hoá đơn thanh toán cho cả khách hàng lẫn người bán, không hỗ trợ giao dịch trực truyến
- 
-### User cho thầy đăng nhập:
-- Username: thevsd27
-- Pass: 123
-### Admin cho thầy đăng nhập để quản lí:
-- Username: admin
-- Pass: ThisIsNotAdmin
-- Sau khi đăng nhập, thầy có thể bấm vào "Welcome, Admin" để hiển thị các mục có thể quản lí
+Shop Bán Sữa - Nền tảng E-commerce Django Toàn diện
 
-## Chức năng
--------------
+![alt text](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
 
-- Đăng ký/Đăng nhập với tư cách là khách hàng hoặc người bán hàng(thông qua page ẩn admin). Có hệ thống session lưu người dùng kể cả khi đã tắt browser(có các bảng của Django trong CSDL)
-  
-### Với người dùng:
 
-- Có page product đưa ra danh sách hàng, mỗi hàng sẽ có nút View Details để hiện thêm thông tin
-- Có thể tìm kiếm món hàng bằng cách nhập tên. Có thể lọc và sắp xếp hàng theo tên hoặc giá
-- Trong thông tin sản phẩm, người mua có thể thêm hàng vào rỏ hàng với số lượng tuỳ thích. Sẽ thông báo "Đã cho vào rỏ hàng" nếu thêm vào thành công. Số lượng tồn kho sẽ giảm nếu hàng được thanh toán
-- Ở đây có bảng Cart để lưu thông tin các món hàng. Các món hàng được phân biệt với nhau qua mã hàng và người mua, kèm theo số lượng và giá mỗi hàng.
-- Có các hàm xử lý sao cho nhiều người dùng cùng thêm hàng cùng một lúc. Khi hết hàng mà người khác vốn đã thêm từ trước, thì món hàng đó sẽ bị mất, kèm theo một thông báo cho người dùng.
-- Có page Cart - giỏ hàng để người dùng xem chi tiết rỏ hàng của mình. Ở đây dùng Group By để gộp lại bất kì hàng nào được thêm nhiều lần. Khách hàng có thể checkout, lưu lại hoá đơn giao dịch để thực hiện sau này.
-- Trong page Cart, người dùng có thể Delete bất kì món hàng nào mình không muốn.
-- Có page Order - hoá đơn để người dùng xem, hiện ra thông tin về hàng và người mua, tổng tiền và trạng thái gửi.
+![alt text](https://img.shields.io/badge/Django-5.2-green?style=for-the-badge&logo=django)
 
-### Với admin:
-- Có thể thêm hàng, chỉnh hàng với xoá hàng
-- Có thể chỉnh đơn hàng và quản lý
 
-## Cấu trúc CSDL
+![alt text](https://img.shields.io/badge/PostgreSQL-14-blue?style=for-the-badge&logo=postgresql)
 
-<img src="README_image/Database.png">
 
-- Các bảng ở bên trái được tạo ra sẵn bởi Django để quản lí người dùng/admin
-- Các bảng ở bên phải được tạo ra bởi bọn em để phục vụ mục đích quản lí/bán hàng
-- Bảng `products` dùng để lưu trữ sản phẩm
-- Bảng `cart` dùng để lưu những sản phẩm được thêm vào giỏ bởi người dùng. </br>
-Hàng của người này với người kia sẽ được phân biệt bởi cột `user`. </br>
-Có đối chiếu khoá ngoại tới `products` ở cột `product_id`
-- Bảng `order` dùng để lưu các hoá đơn thanh toán của người dùng.</br>
-Đơn của mọi người sẽ được phân biệt bởi `user`. </br>
-Có đối chiếu khoá ngoại tới `orderDetails` ở cột `order_id`
-- Bảng `orderDetails` dùng để lưu chi tiết về đơn đặt hàng của người dùng. </br>
-Có đối chiếu khoá ngoại tới `products` ở cột `product_id`
+![alt text](https://img.shields.io/badge/Bootstrap-4.4-purple?style=for-the-badge&logo=bootstrap)
 
-## Các câu lệnh SQL chính
---------------------------
-- Lấy sản phẩm theo id riêng:
-    ```
-    SELECT * FROM `products` WHERE `product_id` = pid
-    ```
-- Lấy danh sách sản phẩm trong cart sau khi được Group By theo id sản phẩm:
-    ```
-    SELECT *, SUM(`cart`.`quantity`) AS `quantity` FROM `cart` WHERE `user` = username 
-    GROUP BY `cart`.`productID`, `cart`.`productName`, `cart`.`productImage`, `cart`.`sellPrice`, `cart`.`user`
-    ```
-- Lấy thông tin hàng được chọn bởi người dùng và cho vào giỏ hàng:
-    ```
-    INSERT INTO cart(`product_id`, `product_name`, `product_image`, `quantity`, `user`)
-    VALUES (product_id, product_name, product_image, quantity, user)
-    ``` 
-- Xoá hàng khỏi giỏ nếu người dùng muốn hoặc do hết hàng:
-    ```
-    DELETE FROM cart
-    WHERE `user` = request.user.username AND `product_id` = pid
-    ```
-- Cập nhật số lượng trong giỏ nếu hàng tồn kho không đủ:
-    ```
-    UPDATE cart
-    SET quantity = in_stock
-    WHERE `user` = request.user.username AND `product_id` = pid
-    ```
-- Cập nhật số hàng tồn kho sau khi đã thanh toán:
-    ```
-    UPDATE products
-    SET quantity = quantity_in_stock
-    WHERE `product_id` = pid
-    ```
-- Hiện hoá đơn cho người dùng:
-    ```
-    SELECT * FROM `orderDJ` WHERE `user` = request.user.username
-    ```
-- Thêm chi tiết vào bảng orderDJ:
-    ```
-    INSERT INTO orderDJ(`user`, `customer_name`, `address`, `phone`, `total_price`)
-    VALUES (user, customer_name, address, phone, total_price)
-    ```
-- Tìm kiếm món hàng theo định dạng tên hàng:
-    ```
-    SELECT * FROM `products` 
-    WHERE UPPER(`products`.`productName`::text) LIKE UPPER(%adidas%)
-    ```
-- Lọc hàng mà không Out Of Stock:
-    ```
-    SELECT * FROM `products` WHERE NOT (`products`.`quantityInStock` = 0)
-    ```
-- Sắp xếp vị trí món hàng theo bảng chữ cái:
-    ```
-    SELECT * FROM `products` ORDER BY `products`.`productName` ASC
-    ```
-- Thêm hàng bởi admin:
-    ```
-    INSERT INTO products(`productID`, `productName`, `productImage`, `company`, `productDescription`, `quantityInStock`, `sellPrice`)
-    VALUES(productID, productName, productImage, company, productDescription, quantityInStock, sellPrice)
-    ```
-- Xoá hàng bởi admin:
-    ```
-    DELETE FROM products WHERE `product_id` = pid
-    ```
-- Chỉnh trạng thái đơn hàng bởi admin:
-    ```
-    UPDATE orders
-    SET `status` = "shipped"
-    WHERE `order_id` = oid
-    ```
 
-## Quá trình phát triển
-------------------------
+![alt text](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-- Định hình mục tiêu là làm web bán giày và nền tảng cho nó là Django
-- Thiết kế cấu trúc trang web
-- Xây dựng các thành phần back-end của Django, bắt đầu xây dựng chức năng
-- Xây dựng front-end cho web với HTML, CSS, JS và Bootstrap. Đồng thời cũng dùng Jinja cho dynamic data
-- Kiểm thử các chức năng như nhiều người cùng thêm và thanh toán hàng, hết hàng
-- **FIX BUG**
-- Hoàn thiện trang web
+Một dự án thương mại điện tử đầy đủ chức năng được xây dựng trên nền tảng Django, mô phỏng một cửa hàng bán các sản phẩm từ sữa. Dự án tích hợp các công nghệ hiện đại như Trợ lý AI (Google Gemini) và Cổng thanh toán tự động (PayOS) để mang lại trải nghiệm mua sắm thông minh và tiện lợi.
 
-## Ảnh demo web
-----------------
+🌐 Tiếng Việt | English (Placeholders for language switching)
+🎯 Giới thiệu dự án
 
-- Homepage - landing page
-<img src="README_image/homepage.png">
-- Register 
-<img src="README_image/Register.png">
-- Login
-<img src="README_image/Login.png">
-- Trang sản phẩm
-<img src="README_image/Products.png" >
-- Chi tiết sản phẩm
-<img src="README_image/Details.png">
-- Giỏ hàng
-<img src="README_image/Cart.png">
-- Chi tiết sản phẩm sau khi thêm vào giỏ
-<img src="README_image/Details_cart.png">
-- Điền thông tin giao hàng
-<img src="README_image/OrderDetails.png">
-- Page đơn hàng
-<img src="README_image/Orders.png">
+Shop Bán Sữa không chỉ là một trang web bán hàng thông thường. Đây là một hệ thống e-commerce hoàn chỉnh, được thiết kế để trình diễn các kỹ năng phát triển web với Django, từ các chức năng cơ bản đến các tích hợp nâng cao. Dự án phù hợp cho các nhà phát triển muốn tìm hiểu về Django, các doanh nghiệp nhỏ muốn xây dựng một cửa hàng trực tuyến, hoặc bất kỳ ai quan tâm đến việc tích hợp AI và thanh toán vào ứng dụng web.
+
+<br>
+
+✨ Tính năng nổi bật
+
+Dự án được trang bị nhiều tính năng mạnh mẽ để phục vụ cả người dùng và quản trị viên:
+
+Dành cho Người dùng (Khách hàng)
+
+✅ Trợ lý AI Thông minh (Google Gemini & RAG): Tích hợp chatbot cho phép khách hàng hỏi đáp về sản phẩm. Chatbot sử dụng kỹ thuật Retrieval-Augmented Generation (RAG) để cung cấp câu trả lời chính xác dựa trên dữ liệu sản phẩm thực tế trong CSDL.
+
+✅ Tích hợp Cổng thanh toán PayOS (VietQR): Cho phép khách hàng thanh toán an toàn và nhanh chóng qua mã QR của các ngân hàng Việt Nam. Hệ thống tự động xác nhận đơn hàng qua Webhook.
+
+✅ Quản lý Tài khoản: Đăng ký, đăng nhập, quên mật khẩu và quản lý thông tin cá nhân.
+
+✅ Trải nghiệm Mua sắm Mượt mà:
+
+Duyệt, tìm kiếm và lọc sản phẩm theo tên, tình trạng còn hàng, giá cả.
+
+Xem chi tiết thông tin, hình ảnh và mô tả sản phẩm.
+
+Hệ thống giỏ hàng động, tự động cập nhật khi kho hàng thay đổi.
+
+✅ Quản lý Đơn hàng: Theo dõi trạng thái đơn hàng (Chờ xử lý, Đã xác nhận, Đang giao,...) và xem lại lịch sử mua hàng.
+
+✅ Đánh giá Sản phẩm: Người dùng có thể viết đánh giá (rating & comment) cho các sản phẩm trong những đơn hàng đã được giao thành công.
+
+Dành cho Quản trị viên (Admin)
+
+✅ Bảng điều khiển Trực quan: Giao diện quản lý thân thiện để giám sát và vận hành cửa hàng.
+
+✅ Quản lý Sản phẩm Toàn diện (CRUD): Thêm, sửa, xóa sản phẩm một cách dễ dàng.
+
+✅ Quản lý Đơn hàng Chuyên sâu:
+
+Xem tất cả đơn hàng của khách hàng.
+
+Lọc đơn hàng theo trạng thái.
+
+Thay đổi trạng thái đơn hàng (Xác nhận, Xử lý, Gửi hàng, Giao hàng).
+
+✅ Phân quyền Rõ ràng: Quyền hạn của admin được tách biệt hoàn toàn với người dùng thông thường.
+
+<br>
+
+📸 Demo & Hình ảnh
+
+(Đây là nơi bạn sẽ chèn hình ảnh hoặc GIF minh họa. Hãy thay thế các URL_TO_YOUR_... bằng đường dẫn thực tế sau khi bạn đã tải ảnh lên)
+
+Trang chủ & Sản phẩm nổi bật	Chatbot AI Tư vấn
+
+![alt text](URL_TO_YOUR_HOMEPAGE_IMAGE.png)
+	
+![alt text](URL_TO_YOUR_CHATBOT_IMAGE.png)
+
+Giỏ hàng & Thanh toán	Quản lý Đơn hàng (Admin)
+
+![alt text](URL_TO_YOUR_CHECKOUT_PAYOS_GIF.gif)
+	
+![alt text](URL_TO_YOUR_ADMIN_ORDERS_IMAGE.png)
+<br>
+
+🛠️ Công nghệ sử dụng
+Lĩnh vực	Công nghệ
+Backend	<a href="https://www.djangoproject.com/"><img src="https://img.shields.io/badge/Django-5.2-092E20?style=flat-square&logo=django" alt="Django"></a> <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python" alt="Python"></a>
+Database	<a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-14-336791?style=flat-square&logo=postgresql" alt="PostgreSQL"></a>
+Frontend	<a href="https://getbootstrap.com/"><img src="https://img.shields.io/badge/Bootstrap-4.4-563D7C?style=flat-square&logo=bootstrap" alt="Bootstrap"></a> <a href="#"><img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5" alt="HTML5"></a> <a href="#"><img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3" alt="CSS3"></a> <a href="#"><img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript" alt="JavaScript"></a>
+Thanh toán	<a href="https://payos.vn/"><img src="https://img.shields.io/badge/PayOS-VietQR-D42A27?style=flat-square" alt="PayOS"></a>
+AI	<a href="https://ai.google.dev/"><img src="https://img.shields.io/badge/Google_Gemini-1.5_Flash-4285F4?style=flat-square&logo=google" alt="Google Gemini"></a>
+Deployment	<a href="https://gunicorn.org/"><img src="https://img.shields.io/badge/Gunicorn-499848?style=flat-square&logo=gunicorn" alt="Gunicorn"></a> <a href="#"><img src="https://img.shields.io/badge/Whitenoise-FFFFFF?style=flat-square" alt="Whitenoise"></a>
+<br>
+
+🏗️ Cấu trúc Dự án
+
+Dự án được tổ chức theo các ứng dụng (apps) Django để đảm bảo tính module và dễ dàng bảo trì:
+
+mainpage: Xử lý trang chủ và các trang tĩnh.
+
+products: Lõi của dự án, quản lý sản phẩm, giỏ hàng, đơn hàng, thanh toán và đánh giá.
+
+accounts: Chịu trách nhiệm xác thực và quản lý người dùng.
+
+admin(app): Chứa các view dành riêng cho chức năng quản trị (đã được cấu trúc lại để sử dụng chung template với products nhằm giảm trùng lặp).
+
+shop (project root): Chứa file cấu hình chính của dự án (settings.py, urls.py).
+
+templates: Chứa các file HTML được chia sẻ trên toàn bộ dự án.
+
+static: Chứa các file tĩnh như CSS, JavaScript, và hình ảnh.
+
+<br>
+
+🚀 Hướng dẫn Cài đặt & Chạy dự án
+
+Làm theo các bước sau để thiết lập môi trường và chạy dự án trên máy của bạn.
+
+1. Yêu cầu cần có
+
+Python (phiên bản 3.10 trở lên)
+
+PostgreSQL (phiên bản 12 trở lên)
+
+Git
+
+2. Các bước cài đặt
+
+a. Clone repository về máy:
+
+Generated bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
+cd YOUR_REPOSITORY_NAME
+
+
+b. Tạo và kích hoạt môi trường ảo (Virtual Environment):
+
+Generated bash
+# Trên macOS/Linux
+python3 -m venv venv
+source venv/bin/activate
+
+# Trên Windows
+python -m venv venv
+.\venv\Scripts\activate
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Bash
+IGNORE_WHEN_COPYING_END
+
+c. Cài đặt các thư viện cần thiết:
+
+Generated bash
+pip install -r requirements.txt
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Bash
+IGNORE_WHEN_COPYING_END
+
+d. Thiết lập cơ sở dữ liệu PostgreSQL:
+
+Mở psql hoặc pgAdmin.
+
+Tạo một database mới cho dự án. Ví dụ: shopdb.
+
+Tạo một user mới với password (hoặc sử dụng user có sẵn).
+
+e. Cấu hình biến môi trường:
+Tạo một file tên là .env trong thư mục gốc của dự án (cùng cấp với manage.py). Sao chép nội dung dưới đây và điền thông tin của bạn.
+
+Generated ini
+# .env.example
+
+# Django Secret Key (có thể giữ nguyên key này cho development)
+SECRET_KEY='&5c1wcgzgoighiw1js%$n8otv!_e&1gm*j(dfxzgcp65fttxv2'
+
+# Database Configuration (thay bằng thông tin PostgreSQL của bạn)
+DB_NAME='shopdb'
+DB_USER='postgres'
+DB_PASSWORD='YOUR_DB_PASSWORD'
+DB_HOST='localhost'
+DB_PORT='5432'
+
+# PayOS API Keys (lấy từ https://dashboard.payos.vn/)
+PAYOS_CLIENT_ID='YOUR_PAYOS_CLIENT_ID'
+PAYOS_API_KEY='YOUR_PAYOS_API_KEY'
+PAYOS_CHECKSUM_KEY='YOUR_PAYOS_CHECKSUM_KEY'
+
+# Google Gemini API Key (lấy từ https://ai.google.dev/)
+GEMINI_API_KEY='YOUR_GEMINI_API_KEY'
+
+# Email Configuration (dùng cho tính năng quên mật khẩu)
+EMAIL_HOST_USER='your_gmail_address@gmail.com'
+EMAIL_HOST_PASSWORD='your_gmail_app_password' # Mật khẩu ứng dụng của Gmail
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Ini
+IGNORE_WHEN_COPYING_END
+
+Lưu ý: EMAIL_HOST_PASSWORD là Mật khẩu Ứng dụng (App Password) bạn tạo trong tài khoản Google, không phải mật khẩu đăng nhập thông thường.
+
+f. Chạy Django Migrations:
+Lệnh này sẽ tạo các bảng trong cơ sở dữ liệu shopdb dựa trên models của dự án.
+
+Generated bash
+python manage.py migrate
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Bash
+IGNORE_WHEN_COPYING_END
+
+g. Tạo tài khoản Quản trị viên (Superuser):
+Tài khoản này dùng để đăng nhập vào trang quản trị và có toàn quyền.
+
+Generated bash
+python manage.py createsuperuser
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Bash
+IGNORE_WHEN_COPYING_END
+
+Sau đó nhập username, email và password theo hướng dẫn.
+
+h. Chạy Development Server:
+
+Generated bash
+python manage.py runserver
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Bash
+IGNORE_WHEN_COPYING_END
+
+🎉 Hoàn tất! Mở trình duyệt và truy cập vào http://127.0.0.1:8000/ để xem trang web.
+
+Trang quản trị của Django: http://127.0.0.1:8000/admin/
+
+<br>
+
+🔬 Phân tích sâu các Chức năng cốt lõi
+1. Trợ lý AI với Google Gemini (RAG)
+
+Đây là tính năng độc đáo nhất của dự án. Thay vì một chatbot thông thường, hệ thống này thông minh hơn nhờ kiến trúc Retrieval-Augmented Generation:
+
+Retrieval (Truy xuất): Khi người dùng gửi một câu hỏi (ví dụ: "shop có sữa nào cho người già không?"), hàm find_relevant_products trong products/views.py sẽ phân tích câu hỏi, loại bỏ các từ không cần thiết và tìm kiếm trong CSDL các sản phẩm có tên, mô tả, hoặc hãng sản xuất khớp với từ khóa.
+
+Augmentation (Bổ sung): Thông tin của các sản phẩm tìm được (tên, giá, mô tả, tình trạng kho) sẽ được hàm create_product_context_for_gemini định dạng lại thành một "bối cảnh" (context) rõ ràng.
+
+Generation (Tạo sinh): "Bối cảnh" này được gửi kèm với câu hỏi gốc của người dùng đến Google Gemini API. Nhờ có bối cảnh, Gemini có thể đưa ra câu trả lời chính xác, chi tiết và phù hợp với dữ liệu thực tế của cửa hàng, thay vì trả lời một cách chung chung.
+
+2. Luồng thanh toán với PayOS
+
+Hệ thống xử lý thanh toán tự động và an toàn thông qua 3 bước chính:
+
+Tạo link thanh toán: Khi người dùng chọn thanh toán qua PayOS và đặt hàng, hệ thống sẽ gọi đến payos_client.createPaymentLink để tạo một yêu cầu thanh toán với thông tin đơn hàng (mã đơn hàng, số tiền). Người dùng sẽ được chuyển hướng đến checkoutUrl do PayOS cung cấp để thực hiện quét mã VietQR.
+
+Xử lý Webhook: Sau khi người dùng thanh toán thành công, PayOS sẽ gửi một yêu cầu POST đến endpoint /payment/webhook/ của website. View payment_webhook_receiver sẽ xác thực yêu cầu này, kiểm tra trạng thái giao dịch. Nếu thành công (code: '00'), hệ thống sẽ:
+
+Cập nhật trạng thái đơn hàng thành Confirmed.
+
+Trừ số lượng sản phẩm trong kho.
+
+Xóa giỏ hàng của người dùng.
+
+Trang trả về (Return URL): Sau khi hoàn tất thanh toán, PayOS sẽ chuyển hướng người dùng trở lại trang /payment/return/. View payment_return_page sẽ hiển thị thông báo thành công hoặc thất bại cho người dùng và điều hướng họ đến trang chi tiết đơn hàng.
+
+<br>
+
+🤝 Đóng góp
+
+Mọi sự đóng góp để cải thiện dự án đều được hoan nghênh. Vui lòng tuân thủ các bước sau:
+
+Fork dự án này.
+
+Tạo một branch mới cho tính năng của bạn (git checkout -b feature/AmazingFeature).
+
+Commit những thay đổi của bạn (git commit -m 'Add some AmazingFeature').
+
+Push lên branch của bạn (git push origin feature/AmazingFeature).
+
+Mở một Pull Request.
+
+<br>
+
+📜 Giấy phép
+
+Dự án này được cấp phép theo Giấy phép MIT. Xem chi tiết tại file LICENSE.
+
+<br>
+
+📧 Liên hệ
+
+Đoàn Duy Chiến - doanduychien204@gmail.com
+
+Link dự án: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME
