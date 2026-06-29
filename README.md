@@ -410,8 +410,3 @@ Dự án này được cấp phép theo Giấy phép MIT. Xem chi tiết tại f
 
 <br>
 
-📧 Liên hệ
-
-Đoàn Duy Chiến - doanduychien204@gmail.com
-
-Link dự án: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME
